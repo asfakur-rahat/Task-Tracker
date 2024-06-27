@@ -1,12 +1,15 @@
 package com.ar.task_tracker.presentation.taskList
 
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.ar.task_tracker.R
 import com.ar.task_tracker.databinding.FragmentTaskListBinding
 import com.ar.task_tracker.domain.model.Task
@@ -49,7 +52,11 @@ class TaskListFragment : Fragment() {
     }
 
     private fun initView(taskList: List<Task>?) {
-        binding.rvTaskList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL , false)
+        if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            binding.rvTaskList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL , false)
+        } else {
+            binding.rvTaskList.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+        }
         binding.rvTaskList.adapter = adapter
         adapter.submitList(taskList)
     }
