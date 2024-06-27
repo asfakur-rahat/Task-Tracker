@@ -63,5 +63,10 @@
         android:indeterminateTint="?colorPrimaryContainer"
         android:visibility="visible"/>
 
+    <include
+        android:id="@+id/bottomSheet"
+        layout="@layout/bottom_sheet_dialog"
+        android:visibility="gone"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

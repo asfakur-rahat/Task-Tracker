@@ -10,9 +10,12 @@ import coil.load
 import com.ar.task_tracker.databinding.TaskItemBinding
 import com.ar.task_tracker.domain.model.Task
 
-class TaskListAdapter: ListAdapter<Task, TaskListAdapter.TaskViewHolder>(TaskDiffUtil) {
+class TaskListAdapter(
+    private val onTaskClicked: (Task) -> Unit
+): ListAdapter<Task, TaskListAdapter.TaskViewHolder>(TaskDiffUtil) {
     class TaskViewHolder(
-        private val binding: TaskItemBinding
+        private val binding: TaskItemBinding,
+        private val onTaskClicked: (Task) -> Unit
 
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(task: Task) {
@@ -34,7 +37,7 @@ class TaskListAdapter: ListAdapter<Task, TaskListAdapter.TaskViewHolder>(TaskDif
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         val binding = TaskItemBinding.inflate(layoutInflater, parent, false)
-        return TaskViewHolder(binding)
+        return TaskViewHolder(binding, onTaskClicked)
     }
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
