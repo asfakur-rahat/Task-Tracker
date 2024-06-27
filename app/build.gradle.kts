@@ -56,6 +56,7 @@ dependencies {
     //Retrofit
     implementation(libs.retrofit)
     implementation(libs.gson)
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
     //Coil
     implementation(libs.coil)
     //Room Database
