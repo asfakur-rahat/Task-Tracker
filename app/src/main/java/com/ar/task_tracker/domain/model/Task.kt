@@ -1,12 +1,15 @@
 package com.ar.task_tracker.domain.model
 
+import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import kotlinx.parcelize.Parcelize
 
 
+@Parcelize
 @Entity(tableName = "tasks")
 data class Task(
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     val id: Int,
     val title: String,
     val description: String,
@@ -14,4 +17,4 @@ data class Task(
     val status: Boolean = false,
     val startTime: String,
     val deadline: String
-)
+): Parcelable

@@ -1,7 +1,9 @@
 package com.ar.task_tracker.data
 
+import com.ar.task_tracker.data.firebase.Firebase
 import com.ar.task_tracker.data.local.AppDatabase
 import com.ar.task_tracker.data.network.api.TaskApi
+import com.ar.task_tracker.domain.model.FireBaseResponse
 import com.ar.task_tracker.domain.model.Task
 import com.ar.task_tracker.domain.model.TaskResponse
 import com.ar.task_tracker.domain.repository.ListRepository
@@ -25,5 +27,13 @@ class ListRepositoryImpl @Inject constructor(
 
     override suspend fun getTasksFromDb(): List<Task> = withContext(Dispatchers.IO) {
         return@withContext db.taskDao().getTasks()
+    }
+
+    override suspend fun saveTaskDetailsInCloud(task: Task): Boolean {
+        return Firebase.saveTaskDetailsInFireBase(task)
+    }
+
+    override suspend fun getTaskFromCloud(): List<FireBaseResponse> {
+        return Firebase.getTaskDetailsFromFireBase()
     }
 }

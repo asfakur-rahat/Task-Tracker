@@ -12,49 +12,49 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TaskListViewModel
-    @Inject
-    constructor(
-        private val repository: ListRepository,
-    ) : ViewModel() {
-        var taskList = MutableLiveData<List<Task>>()
-            private set
-        var isLoading = MutableLiveData<Boolean>()
-            private set
+@Inject
+constructor(
+    private val repository: ListRepository,
+) : ViewModel() {
+    var taskList = MutableLiveData<List<Task>>()
+        private set
+    var isLoading = MutableLiveData<Boolean>()
+        private set
 
-        init {
-            viewModelScope.launch {
-                isLoading.value = true
-                val responseFromDB = repository.getTasksFromDb()
-                if (responseFromDB.isNotEmpty()) {
-                    isLoading.value = false
-                    this@TaskListViewModel.taskList.value = responseFromDB
-                } else {
-                    val response = repository.getTasks()
-                    if (response.isSuccessful) {
-                        val taskResponseList = response.body()?.toList()
-                        val taskList = mutableListOf<Task>()
-                        taskResponseList?.forEach { taskResponse ->
-                            var image: String? = null
-                            if (taskResponse.id % 2 == 1) {
-                                image = AppConstant.Default_Task_Image
-                            }
-                            taskList.add(
-                                Task(
-                                    id = taskResponse.id,
-                                    title = taskResponse.title,
-                                    description = AppConstant.Default_Task_Description,
-                                    image = image,
-                                    status = taskResponse.completed,
-                                    startTime = "Now",
-                                    deadline = "1 Hour",
-                                ),
-                            )
+    fun initList() =
+        viewModelScope.launch {
+            isLoading.value = true
+            val responseFromDB = repository.getTasksFromDb()
+            if (responseFromDB.isNotEmpty()) {
+                isLoading.value = false
+                this@TaskListViewModel.taskList.value = responseFromDB
+            } else {
+                val response = repository.getTasks()
+                if (response.isSuccessful) {
+                    val taskResponseList = response.body()?.toList()
+                    val taskList = mutableListOf<Task>()
+                    taskResponseList?.forEach { taskResponse ->
+                        var image: String? = null
+                        if (taskResponse.id % 2 == 1) {
+                            image = AppConstant.Default_Task_Image
                         }
-                        isLoading.value = false
-                        repository.insertTasks(taskList)
-                        this@TaskListViewModel.taskList.value = taskList
+                        taskList.add(
+                            Task(
+                                id = taskResponse.id,
+                                title = taskResponse.title,
+                                description = AppConstant.Default_Task_Description,
+                                image = image,
+                                status = taskResponse.completed,
+                                startTime = "Now",
+                                deadline = "1 Hour",
+                            ),
+                        )
                     }
+                    isLoading.value = false
+                    repository.insertTasks(taskList)
+                    this@TaskListViewModel.taskList.value = taskList
                 }
             }
         }
-    }
+}
+

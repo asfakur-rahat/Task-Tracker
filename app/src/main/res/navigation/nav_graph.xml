@@ -9,5 +9,32 @@
         android:id="@+id/taskListFragment"
         android:name="com.ar.task_tracker.presentation.taskList.TaskListFragment"
         android:label="fragment_task_list"
-        tools:layout="@layout/fragment_task_list" />
+        tools:layout="@layout/fragment_task_list" >
+        <action
+            android:id="@+id/action_taskListFragment_to_taskDetailsFragment"
+            app:destination="@id/taskDetailsFragment" />
+        <action
+            android:id="@+id/action_taskListFragment_to_addTaskFragment"
+            app:destination="@id/addTaskFragment" />
+        <action
+            android:id="@+id/action_taskListFragment_to_editTaskFragment"
+            app:destination="@id/editTaskFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/taskDetailsFragment"
+        android:name="com.ar.task_tracker.presentation.taskDetails.TaskDetailsFragment"
+        android:label="fragment_task_details"
+        tools:layout="@layout/fragment_task_details" >
+        <argument
+            android:name="taskItem"
+            app:argType="com.ar.task_tracker.domain.model.Task" />
+    </fragment>
+    <fragment
+        android:id="@+id/addTaskFragment"
+        android:name="com.ar.task_tracker.presentation.addTask.AddTaskFragment"
+        android:label="AddTaskFragment" />
+    <fragment
+        android:id="@+id/editTaskFragment"
+        android:name="com.ar.task_tracker.presentation.editTask.EditTaskFragment"
+        android:label="EditTaskFragment" />
 </navigation>

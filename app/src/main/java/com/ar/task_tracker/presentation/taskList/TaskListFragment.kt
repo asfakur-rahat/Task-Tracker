@@ -5,17 +5,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.ar.task_tracker.R
 import com.ar.task_tracker.databinding.FragmentTaskListBinding
 import com.ar.task_tracker.domain.model.Task
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -38,11 +35,19 @@ class TaskListFragment : Fragment() {
         //bottomSheetBehavior = BottomSheetBehavior.from(view.findViewById(R.id.bottomSheet))
         adapter =
             TaskListAdapter {
-                Toast.makeText(requireContext(), "clicked on task ${it.id}", Toast.LENGTH_SHORT).show()
-                showOptions()
+                //Toast.makeText(requireContext(), "clicked on task ${it.id}", Toast.LENGTH_SHORT).show()
+                showOptions(it)
             }
         super.onViewCreated(view, savedInstanceState)
+        binding.addTaskBtn.setOnClickListener {
+            findNavController().navigate(TaskListFragmentDirections.actionTaskListFragmentToAddTaskFragment())
+        }
         initObserver()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.initList()
     }
 
     private fun initObserver() {
@@ -60,16 +65,21 @@ class TaskListFragment : Fragment() {
         }
     }
 
-    private fun showOptions(){
-        val bottomSheet  = ModalBottomSheet(
+    private fun showOptions(task: Task) {
+        val bottomSheet = ModalBottomSheet(
             onEdit = {
-                Toast.makeText(requireContext(), "clicked on Edit", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(requireContext(), "clicked on Edit", Toast.LENGTH_SHORT).show()
             },
             onDetails = {
-                Toast.makeText(requireContext(), "clicked on Details", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(requireContext(), "clicked on Details", Toast.LENGTH_SHORT).show()
+                findNavController().navigate(
+                    TaskListFragmentDirections.actionTaskListFragmentToTaskDetailsFragment(
+                        task
+                    )
+                )
             },
-            onCompleted ={
-                Toast.makeText(requireContext(), "clicked on Done", Toast.LENGTH_SHORT).show()
+            onCompleted = {
+                //Toast.makeText(requireContext(), "clicked on Done", Toast.LENGTH_SHORT).show()
             }
         )
         bottomSheet.show(requireActivity().supportFragmentManager, ModalBottomSheet.TAG)
