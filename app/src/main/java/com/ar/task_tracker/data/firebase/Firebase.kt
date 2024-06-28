@@ -66,5 +66,13 @@ class Firebase {
                 false
             }
         }
+
+        suspend fun deleteTask(taskId: Int): Boolean = withContext(Dispatchers.IO){
+            val firestore = FirebaseFirestore.getInstance()
+            val storage = FirebaseStorage.getInstance()
+            firestore.collection("tasks").document(taskId.toString()).delete().await()
+            storage.reference.child("image/${taskId}").delete().await()
+            return@withContext true
+        }
     }
 }

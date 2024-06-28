@@ -19,6 +19,7 @@ class TaskDetailsViewModel @Inject constructor(
     fun deleteTask(taskID: Int) = viewModelScope.launch {
         updated.value = false
         repository.deleteTaskFromDB(taskID)
+        repository.deleteTaskFromCloud(taskID)
         updated.value = true
     }
 
