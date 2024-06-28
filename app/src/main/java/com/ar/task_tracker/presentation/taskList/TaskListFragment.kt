@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -14,6 +15,7 @@ import com.ar.task_tracker.R
 import com.ar.task_tracker.databinding.FragmentTaskListBinding
 import com.ar.task_tracker.domain.model.Task
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -21,8 +23,6 @@ class TaskListFragment : Fragment() {
     private val viewModel: TaskListViewModel by viewModels()
     private lateinit var binding: FragmentTaskListBinding
     private lateinit var adapter: TaskListAdapter
-
-    private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,22 +35,15 @@ class TaskListFragment : Fragment() {
         savedInstanceState: Bundle?,
     ) {
         binding = FragmentTaskListBinding.bind(view)
-        bottomSheetBehavior = BottomSheetBehavior.from(view.findViewById(R.id.bottomSheet))
+        //bottomSheetBehavior = BottomSheetBehavior.from(view.findViewById(R.id.bottomSheet))
         adapter =
             TaskListAdapter {
-                //taskClicked(it)
+                Toast.makeText(requireContext(), "clicked on task ${it.id}", Toast.LENGTH_SHORT).show()
+                showOptions()
             }
         super.onViewCreated(view, savedInstanceState)
         initObserver()
     }
-
-//    private fun taskClicked(it: Task) {
-//        if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
-//            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-//        } else {
-//            bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-//        }
-//    }
 
     private fun initObserver() {
         viewModel.taskList.observe(viewLifecycleOwner) { taskList ->
@@ -65,6 +58,21 @@ class TaskListFragment : Fragment() {
                 binding.rvTaskList.visibility = View.VISIBLE
             }
         }
+    }
+
+    private fun showOptions(){
+        val bottomSheet  = ModalBottomSheet(
+            onEdit = {
+                Toast.makeText(requireContext(), "clicked on Edit", Toast.LENGTH_SHORT).show()
+            },
+            onDetails = {
+                Toast.makeText(requireContext(), "clicked on Details", Toast.LENGTH_SHORT).show()
+            },
+            onCompleted ={
+                Toast.makeText(requireContext(), "clicked on Done", Toast.LENGTH_SHORT).show()
+            }
+        )
+        bottomSheet.show(requireActivity().supportFragmentManager, ModalBottomSheet.TAG)
     }
 
     private fun initView(taskList: List<Task>?) {

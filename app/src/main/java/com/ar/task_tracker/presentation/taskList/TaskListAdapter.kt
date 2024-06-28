@@ -30,6 +30,10 @@ class TaskListAdapter(
             binding.taskStatus.text = if (task.status) "Completed" else "Pending"
             binding.taskStartTime.text = task.startTime
             binding.taskDeadline.text = task.deadline
+
+            binding.taskCard.setOnClickListener {
+                onTaskClicked(task)
+            }
         }
     }
 
