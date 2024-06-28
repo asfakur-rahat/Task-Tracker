@@ -13,17 +13,14 @@ import javax.inject.Inject
 class TaskDetailsViewModel @Inject constructor(
     private val repository: ListRepository
 ) : ViewModel() {
-    var done = MutableLiveData<Boolean>(false)
+    var updated = MutableLiveData<Boolean>(false)
         private set
 
-    fun saveImage(task: Task) = viewModelScope.launch {
-        println("here")
-        val response = repository.saveTaskDetailsInCloud(task)
-
-        if(response == true){
-            done.value = response
-        }else{
-            done.value = response
-        }
+    fun deleteTask(taskID: Int) = viewModelScope.launch {
+        updated.value = false
+        repository.deleteTaskFromDB(taskID)
+        updated.value = true
     }
+
+
 }

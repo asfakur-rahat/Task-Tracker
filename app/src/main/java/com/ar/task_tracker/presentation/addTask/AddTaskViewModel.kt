@@ -16,7 +16,7 @@ class AddTaskViewModel @Inject constructor(
     var cloudDone = MutableLiveData<Boolean>(false)
         private set
 
-    var taskCount = MutableLiveData<Int>(0)
+    var availableID = MutableLiveData<Int>(0)
         private set
 
     var allDone = MutableLiveData<Boolean>(false)
@@ -24,7 +24,15 @@ class AddTaskViewModel @Inject constructor(
 
     fun currentTaskCount() = viewModelScope.launch {
         val response = repository.getTasksFromDb()
-        taskCount.value = response.size
+        val ids = response.map {
+            it.id
+        }
+        var id = 1
+        while(id in ids){
+            id++
+            println(id)
+        }
+        availableID.value = id
     }
 
     private fun saveTaskToRoom(taskList: List<Task>) = viewModelScope.launch {

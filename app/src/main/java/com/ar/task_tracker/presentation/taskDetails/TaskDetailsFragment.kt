@@ -11,6 +11,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import coil.load
 import com.ar.task_tracker.R
@@ -26,48 +27,33 @@ class TaskDetailsFragment : Fragment(R.layout.fragment_task_details) {
     private lateinit var task: Task
     private val viewModel: TaskDetailsViewModel by viewModels()
 
-    private lateinit var pickMedia: ActivityResultLauncher<PickVisualMediaRequest>
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()){ uri ->
-            if (uri!=null){
-                handleImage(uri)
-            }
-        }
-    }
-
-    private fun handleImage(uri: Uri) {
-        task = task.copy(
-            image = uri.toString()
-        )
-        binding.ivTaskImage.setImageURI(uri)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding = FragmentTaskDetailsBinding.bind(view)
         super.onViewCreated(view, savedInstanceState)
         task = args.taskItem
         initView(task)
-        binding.ivTaskImage.setOnClickListener {
-            pickImage()
-        }
+        initObserver()
         binding.topAppBar.setOnMenuItemClickListener {  item ->
             when(item.itemId){
-                R.id.delete -> saveTask(
-                    task
-                )
+                R.id.delete -> {
+                    deleteTask(task.id)
+                }
             }
             true
         }
     }
 
-    private fun saveTask(taskItem: Task) {
-        viewModel.saveImage(taskItem)
+    private fun deleteTask(id: Int) {
+        viewModel.deleteTask(id)
     }
 
-    private fun pickImage() {
-        pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+    private fun initObserver() {
+        viewModel.updated.observe(viewLifecycleOwner){
+            if(it == true){
+                findNavController().popBackStack()
+            }
+        }
     }
 
     private fun initView(task: Task) {

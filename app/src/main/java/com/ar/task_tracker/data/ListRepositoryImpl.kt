@@ -36,4 +36,8 @@ class ListRepositoryImpl @Inject constructor(
     override suspend fun getTaskFromCloud(): List<FireBaseResponse> {
         return Firebase.getTaskDetailsFromFireBase()
     }
+
+    override suspend fun deleteTaskFromDB(taskID: Int) {
+        return db.taskDao().deleteTask(taskID)
+    }
 }

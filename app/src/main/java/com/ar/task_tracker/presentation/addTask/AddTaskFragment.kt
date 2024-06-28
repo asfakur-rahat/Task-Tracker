@@ -61,8 +61,8 @@ class AddTaskFragment : Fragment(R.layout.fragment_add_task) {
     }
 
     private fun initObserver() {
-        viewModel.taskCount.observe(viewLifecycleOwner) {
-            taskId = it + 1
+        viewModel.availableID.observe(viewLifecycleOwner) {
+            taskId = it
         }
         viewModel.cloudDone.observe(viewLifecycleOwner) {
             println(it)
