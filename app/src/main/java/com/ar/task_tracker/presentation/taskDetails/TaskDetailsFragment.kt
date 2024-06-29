@@ -35,12 +35,16 @@ class TaskDetailsFragment : Fragment(R.layout.fragment_task_details) {
         super.onViewCreated(view, savedInstanceState)
         task = args.taskItem
         initView(task)
+        initListener()
         initObserver()
+
+    }
+
+    //Listener for Buttons
+    private fun initListener() {
         binding.topAppBar.setOnMenuItemClickListener {  item ->
             when(item.itemId){
-                R.id.delete -> {
-                    deleteTask(task.id)
-                }
+                R.id.delete -> { deleteTask(task.id) }
             }
             true
         }
@@ -49,25 +53,41 @@ class TaskDetailsFragment : Fragment(R.layout.fragment_task_details) {
         }
     }
 
+    //Call for delete task from Cloud + Room
     private fun deleteTask(id: Int) {
         viewModel.deleteTask(id, args.taskItem)
     }
 
+    //Observers for Livedata
     private fun initObserver() {
         viewModel.deleted.observe(viewLifecycleOwner){
             if(it == true){
-                findNavController().popBackStack()
+                goBack()
             }
         }
         viewModel.loader.observe(viewLifecycleOwner){
             if(it == true){
-                binding.mainView.visibility = View.GONE
-                binding.progressBar.visibility = View.VISIBLE
+                showLoader()
             }else{
-                binding.progressBar.visibility = View.GONE
-                binding.mainView.visibility = View.VISIBLE
+                hideLoader()
             }
         }
+    }
+
+
+    // for show and hide loader
+    private fun showLoader(){
+        binding.progressBar.visibility = View.VISIBLE
+        binding.mainView.visibility = View.GONE
+    }
+    private fun hideLoader(){
+        binding.progressBar.visibility = View.GONE
+        binding.mainView.visibility = View.VISIBLE
+    }
+
+    //Back to Task List
+    private fun goBack() {
+        findNavController().popBackStack()
     }
 
     private fun initView(task: Task) {
@@ -84,6 +104,11 @@ class TaskDetailsFragment : Fragment(R.layout.fragment_task_details) {
         }
         binding.tvStartTime.text = task.startTime
         binding.tvDeadline.text = task.deadline
+        setStatus(task)
+    }
+
+    //Setting Status and Color based on task current status
+    private fun setStatus(task: Task) {
         if(task.status){
             binding.tvTaskStatus.text = "Completed"
             binding.tvTaskStatus.setTextColor(Color.GREEN)
