@@ -91,7 +91,7 @@ class TaskListFragment : Fragment() {
         if(task.status){
             Toast.makeText(requireContext(), "The task in already completed", Toast.LENGTH_SHORT).show()
         }else{
-            viewModel.markTaskAsDone(task)
+            viewModel.markTaskAsDone(task.copy(status = true))
         }
     }
 
