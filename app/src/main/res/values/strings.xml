@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">Task-Tracker</string>
+    <string name="title">Title</string>
+    <string name="the_title_of_the_task">The title of the task</string>
+    <string name="descriptions">Description</string>
+    <string name="this_is_the_description_of_the_task">This is the Description of the task.</string>
+    <string name="start_time">Start Time:</string>
+    <string name="start_time_date">28/06/2024</string>
+    <string name="deadline_tag">Deadline:</string>
+    <string name="deadline_time_date">Select a DeadLine</string>
+    <string name="status_tag">Status:</string>
+    <string name="status">Completed</string>
+    <string name="task_description_hint">Enter the task description…</string>
+    <string name="title_hint">Enter the task title</string>
 </resources>
