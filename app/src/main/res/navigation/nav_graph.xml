@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/taskListFragment">
+    app:startDestination="@id/editTaskFragment">
 
     <fragment
         android:id="@+id/taskListFragment"
@@ -36,5 +36,9 @@
     <fragment
         android:id="@+id/editTaskFragment"
         android:name="com.ar.task_tracker.presentation.editTask.EditTaskFragment"
-        android:label="EditTaskFragment" />
+        android:label="EditTaskFragment" >
+        <argument
+            android:name="task"
+            app:argType="com.ar.task_tracker.domain.model.Task" />
+    </fragment>
 </navigation>

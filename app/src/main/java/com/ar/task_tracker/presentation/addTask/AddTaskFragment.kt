@@ -92,6 +92,8 @@ class AddTaskFragment : Fragment(R.layout.fragment_add_task) {
 
     private fun initView() {
         viewModel.currentTaskCount()
+        var startDate = ""
+        var deadLine = ""
         binding.topAppBar.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.save -> {
@@ -115,21 +117,27 @@ class AddTaskFragment : Fragment(R.layout.fragment_add_task) {
             pickImage()
         }
         binding.tvStartTime.setOnClickListener {
+            startDate = ""
             val newFragment = DatePickerFragment { yy, mm, dd ->
-                binding.tvStartTime.text = "$yy/$mm/$dd"
-                val timeFragment = TimePickerFragment { hh, mm ->
-                    binding.tvStartTime.setText(binding.tvStartTime.text.toString() + " - $hh:$mm")
-                }
+                startDate = "$startDate$dd/$mm/$yy"
+                val timeFragment = TimePickerFragment(selectedYear = yy, selectedMonth = mm, selectedDay = dd, onSet = { hour, min ->
+                    val minute = String.format("%02d", min)
+                    startDate = "$startDate - $hour : $minute"
+                    binding.tvStartTime.text = startDate
+                })
                 timeFragment.show(requireActivity().supportFragmentManager, "timePicker")
             }
             newFragment.show(requireActivity().supportFragmentManager, "datePicker")
         }
         binding.tvDeadline.setOnClickListener {
+            deadLine = ""
             val newFragment = DatePickerFragment { yy, mm, dd ->
-                binding.tvDeadline.text = "$yy/$mm/$dd"
-                val timeFragment = TimePickerFragment { hh, min ->
-                    binding.tvDeadline.setText(binding.tvDeadline.text.toString() + " - $hh:$min")
-                }
+                deadLine = "$deadLine$dd/$mm/$yy"
+                val timeFragment = TimePickerFragment(selectedYear = yy, selectedMonth = mm, selectedDay = dd, onSet = { hour, min ->
+                    val minute = String.format("%02d", min)
+                    deadLine = "$deadLine - $hour : $minute"
+                    binding.tvDeadline.text = deadLine
+                })
                 timeFragment.show(requireActivity().supportFragmentManager, "timePicker")
             }
             newFragment.show(requireActivity().supportFragmentManager, "datePicker")

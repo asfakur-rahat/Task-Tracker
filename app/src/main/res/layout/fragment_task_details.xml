@@ -25,6 +25,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:title="Task Details"
             app:menu="@menu/top_menu"
+            app:navigationIcon="@drawable/ic_back"
             app:titleCentered="true"
             app:titleTextColor="?colorOnBackground"/>
     </com.google.android.material.appbar.AppBarLayout>
@@ -48,7 +49,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Title:"
+                android:text="@string/title"
                 app:layout_constraintStart_toEndOf="@id/start"
                 app:layout_constraintTop_toTopOf="@id/second" />
 
@@ -58,9 +59,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:text="This is the title of the task."
+                android:text="@string/the_title_of_the_task"
                 android:textSize="18sp"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/end"
                 app:layout_constraintStart_toStartOf="@id/tv_task_title_tag"
                 app:layout_constraintTop_toBottomOf="@id/tv_task_title_tag" />
 
@@ -70,7 +71,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Descriptions:"
+                android:text="@string/descriptions"
                 app:layout_constraintStart_toEndOf="@id/start"
                 app:layout_constraintTop_toBottomOf="@id/tv_task_title" />
 
@@ -81,9 +82,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:text="This is the Description of the task."
+                android:text="@string/this_is_the_description_of_the_task"
                 android:textSize="16sp"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/end"
                 app:layout_constraintStart_toStartOf="@id/tv_task_description_tag"
                 app:layout_constraintTop_toBottomOf="@id/tv_task_description_tag" />
 
@@ -106,7 +107,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:textSize="16sp"
-                android:text="Start Time:"
+                android:text="@string/start_time"
                 app:layout_constraintStart_toEndOf="@id/start"
                 app:layout_constraintTop_toBottomOf="@id/iv_task_image" />
 
@@ -116,7 +117,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:text="28/06/2024"
+                android:text="@string/start_time_date"
                 android:textColor="#42E925"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="@+id/tv_start_time_tag"
@@ -130,7 +131,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:textSize="16sp"
-                android:text="DeadLine:"
+                android:text="@string/deadline_tag"
                 app:layout_constraintStart_toEndOf="@id/start"
                 app:layout_constraintTop_toBottomOf="@id/tv_start_time_tag" />
 
@@ -140,7 +141,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:text="28/06/2024"
+                android:text="@string/deadline_time_date"
                 android:textColor="#42E925"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="@+id/tv_deadline_tag"
@@ -152,11 +153,12 @@
                 style="@style/TextAppearance.AppCompat.Title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginVertical="16dp"
                 android:textSize="16sp"
-                android:text="Status:"
+                android:text="@string/status_tag"
                 app:layout_constraintStart_toEndOf="@id/start"
-                app:layout_constraintTop_toBottomOf="@id/tv_deadline_tag" />
+                app:layout_constraintTop_toBottomOf="@id/tv_deadline_tag"
+                app:layout_constraintBottom_toBottomOf="parent"/>
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/tv_task_status"
@@ -164,7 +166,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:text="Completed"
+                android:text="@string/status"
                 android:textColor="#42E925"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="@+id/tv_task_status_tag"
@@ -177,6 +179,14 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 app:layout_constraintGuide_percent="0.06"/>
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/end"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.93" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.core.widget.NestedScrollView>
