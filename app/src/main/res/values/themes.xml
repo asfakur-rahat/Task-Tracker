@@ -52,6 +52,6 @@
     <style name="image_shape">
         <item name="android:height">150dp</item>
         <item name="android:width">150dp</item>
-        <item name="cornerSize">25%</item>
+        <item name="cornerSize">5%</item>
     </style>
 </resources>

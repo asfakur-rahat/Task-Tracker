@@ -17,7 +17,7 @@ interface ListRepository {
 
     suspend fun getTaskFromCloud(): List<FireBaseResponse>
 
-    suspend fun deleteTaskFromCloud(taskID: Int): Boolean
+    suspend fun deleteTaskFromCloud(taskID: Int, task: Task): Boolean
 
     suspend fun deleteTaskFromDB(taskID: Int)
 }

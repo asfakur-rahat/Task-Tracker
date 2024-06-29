@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -32,10 +33,8 @@ class TaskListFragment : Fragment() {
         savedInstanceState: Bundle?,
     ) {
         binding = FragmentTaskListBinding.bind(view)
-        //bottomSheetBehavior = BottomSheetBehavior.from(view.findViewById(R.id.bottomSheet))
         adapter =
             TaskListAdapter {
-                //Toast.makeText(requireContext(), "clicked on task ${it.id}", Toast.LENGTH_SHORT).show()
                 showOptions(it)
             }
         super.onViewCreated(view, savedInstanceState)
@@ -68,10 +67,13 @@ class TaskListFragment : Fragment() {
     private fun showOptions(task: Task) {
         val bottomSheet = ModalBottomSheet(
             onEdit = {
-                //Toast.makeText(requireContext(), "clicked on Edit", Toast.LENGTH_SHORT).show()
+                findNavController().navigate(
+                    TaskListFragmentDirections.actionTaskListFragmentToEditTaskFragment(
+                        task
+                    )
+                )
             },
             onDetails = {
-                //Toast.makeText(requireContext(), "clicked on Details", Toast.LENGTH_SHORT).show()
                 findNavController().navigate(
                     TaskListFragmentDirections.actionTaskListFragmentToTaskDetailsFragment(
                         task
@@ -79,7 +81,11 @@ class TaskListFragment : Fragment() {
                 )
             },
             onCompleted = {
-                //Toast.makeText(requireContext(), "clicked on Done", Toast.LENGTH_SHORT).show()
+                if(task.status){
+                    Toast.makeText(requireContext(), "The Task is already Completed", Toast.LENGTH_SHORT).show()
+                }else{
+                    viewModel.markTaskAsDone(task.copy(status = true))
+                }
             }
         )
         bottomSheet.show(requireActivity().supportFragmentManager, ModalBottomSheet.TAG)

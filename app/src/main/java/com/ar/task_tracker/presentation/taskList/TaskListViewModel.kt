@@ -33,28 +33,41 @@ constructor(
                 if (response.isSuccessful) {
                     val taskResponseList = response.body()?.toList()
                     val taskList = mutableListOf<Task>()
+                    var count = 0
                     taskResponseList?.forEach { taskResponse ->
-                        var image: String? = null
-                        if (taskResponse.id % 2 == 1) {
-                            image = AppConstant.Default_Task_Image
-                        }
-                        taskList.add(
-                            Task(
-                                id = taskResponse.id,
-                                title = taskResponse.title,
-                                description = AppConstant.Default_Task_Description,
-                                image = image,
-                                status = taskResponse.completed,
-                                startTime = "Now",
-                                deadline = "1 Hour",
-                            ),
+                        val task = Task(
+                            id = taskResponse.id,
+                            title = taskResponse.title,
+                            description = AppConstant.Default_Task_Description,
+                            image = null,
+                            status = taskResponse.completed,
+                            startTime = "Now",
+                            deadline = "1 Hour",
                         )
+                        taskList.add(
+                            task
+                        )
+                        val result = repository.saveTaskDetailsInCloud(task)
+                        if (result) {
+                            count++
+                        }
                     }
-                    isLoading.value = false
+                    if (count == taskResponseList?.size) {
+                        isLoading.value = false
+                    }
                     repository.insertTasks(taskList)
                     this@TaskListViewModel.taskList.value = taskList
                 }
             }
         }
+    fun markTaskAsDone(task: Task) = viewModelScope.launch {
+        println(task)
+        val taskList = mutableListOf<Task>(task)
+        repository.insertTasks(taskList)
+        val updatedList = repository.getTasksFromDb()
+        println(updatedList)
+        this@TaskListViewModel.taskList.value = updatedList
+    }
+
 }
 

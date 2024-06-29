@@ -1,5 +1,6 @@
 package com.ar.task_tracker.presentation.taskList
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,6 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import com.ar.task_tracker.R
 import com.ar.task_tracker.databinding.TaskItemBinding
 import com.ar.task_tracker.domain.model.Task
 
@@ -23,11 +25,14 @@ class TaskListAdapter(
                 binding.taskImage.visibility = View.GONE
             }else{
                 binding.taskImage.visibility = View.VISIBLE
-                binding.taskImage.load(task.image)
+                binding.taskImage.load(task.image){
+                    placeholder(R.drawable.image_placeholder)
+                }
             }
             binding.taskTitle.text = task.title
             binding.taskDescription.text = task.description
             binding.taskStatus.text = if (task.status) "Completed" else "Pending"
+            binding.taskStatus.setTextColor(if (task.status) Color.GREEN else Color.RED)
             binding.taskStartTime.text = task.startTime
             binding.taskDeadline.text = task.deadline
 

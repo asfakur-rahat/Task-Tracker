@@ -1,12 +1,11 @@
 package com.ar.task_tracker.presentation.addTask
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -18,6 +17,8 @@ import com.ar.task_tracker.domain.model.Task
 import com.ar.task_tracker.presentation.dialogs.DatePickerFragment
 import com.ar.task_tracker.presentation.dialogs.TimePickerFragment
 import dagger.hilt.android.AndroidEntryPoint
+import java.text.SimpleDateFormat
+import java.util.Calendar
 
 @AndroidEntryPoint
 class AddTaskFragment : Fragment(R.layout.fragment_add_task) {
@@ -82,65 +83,105 @@ class AddTaskFragment : Fragment(R.layout.fragment_add_task) {
             }
         }
         viewModel.allDone.observe(viewLifecycleOwner) {
-            //println(it)
             if (it == true) {
-                //println("eihane")
                 findNavController().popBackStack()
+            }
+        }
+
+        viewModel.loader.observe(viewLifecycleOwner){
+            if(it ==true){
+                binding.progressBar.visibility = View.VISIBLE
+                binding.mainView.visibility = View.GONE
+            }else{
+                binding.progressBar.visibility = View.GONE
+                binding.mainView.visibility = View.VISIBLE
             }
         }
     }
 
+    @SuppressLint("SimpleDateFormat")
     private fun initView() {
         viewModel.currentTaskCount()
-        var startDate = ""
-        var deadLine = ""
         binding.topAppBar.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.save -> {
-                    //println("Menu Item Clicked")
-                    saveTask(
-                        Task(
-                            id = taskId,
-                            title = binding.tvTaskTitle.text.toString().trimMargin(),
-                            description = binding.tvTaskDescription.text.toString().trimMargin(),
-                            image = imageuri,
-                            startTime = binding.tvStartTime.text.toString().trimMargin(),
-                            deadline = binding.tvDeadline.text.toString().trimMargin(),
-                            status = false
-                        )
-                    )
+                    saveTaskClicked()
                 }
             }
             true
         }
+        val time = Calendar.getInstance().time
+        val formatter = SimpleDateFormat("dd/MM/yyyy - HH:mm")
+        val currentTime = formatter.format(time)
+
+        binding.tvStartTime.text = currentTime
+
         binding.ivTaskImage.setOnClickListener {
             pickImage()
         }
         binding.tvStartTime.setOnClickListener {
-            startDate = ""
-            val newFragment = DatePickerFragment { yy, mm, dd ->
-                startDate = "$startDate$dd/$mm/$yy"
-                val timeFragment = TimePickerFragment(selectedYear = yy, selectedMonth = mm, selectedDay = dd, onSet = { hour, min ->
-                    val minute = String.format("%02d", min)
-                    startDate = "$startDate - $hour : $minute"
-                    binding.tvStartTime.text = startDate
-                })
-                timeFragment.show(requireActivity().supportFragmentManager, "timePicker")
-            }
-            newFragment.show(requireActivity().supportFragmentManager, "datePicker")
+            pickStartDateAndTime()
         }
         binding.tvDeadline.setOnClickListener {
-            deadLine = ""
-            val newFragment = DatePickerFragment { yy, mm, dd ->
-                deadLine = "$deadLine$dd/$mm/$yy"
-                val timeFragment = TimePickerFragment(selectedYear = yy, selectedMonth = mm, selectedDay = dd, onSet = { hour, min ->
-                    val minute = String.format("%02d", min)
-                    deadLine = "$deadLine - $hour : $minute"
-                    binding.tvDeadline.text = deadLine
-                })
-                timeFragment.show(requireActivity().supportFragmentManager, "timePicker")
-            }
-            newFragment.show(requireActivity().supportFragmentManager, "datePicker")
+            pickDeadLineDateAndTime()
         }
+        binding.topAppBar.setNavigationOnClickListener {
+            findNavController().popBackStack()
+        }
+    }
+
+    private fun saveTaskClicked() {
+        val title = binding.tvTaskTitle.text.toString().trimMargin()
+        val description = binding.tvTaskDescription.text.toString().trimMargin()
+        if(title.isEmpty() || description.isEmpty()){
+            if (title.isEmpty()){
+                binding.titleLayout.error = "Title is required"
+                binding.descriptionLayout.error = null
+            }else{
+                binding.titleLayout.error = null
+                binding.descriptionLayout.error = "Description is required"
+            }
+        }else{
+            saveTask(
+                Task(
+                    id = taskId,
+                    title = title,
+                    description = description,
+                    image = imageuri,
+                    startTime = binding.tvStartTime.text.toString().trimMargin(),
+                    deadline = binding.tvDeadline.text.toString().trimMargin(),
+                    status = false
+                )
+            )
+        }
+    }
+
+    private fun pickStartDateAndTime(){
+        var startDate = ""
+        val newFragment = DatePickerFragment { yy, mm, dd ->
+            val MM = String.format("%02d", mm)
+            startDate = "$startDate$dd/$MM/$yy"
+            val timeFragment = TimePickerFragment(selectedYear = yy, selectedMonth = mm, selectedDay = dd, onSet = { hour, min ->
+                val minute = String.format("%02d", min)
+                startDate = "$startDate - $hour : $minute"
+                binding.tvStartTime.text = startDate
+            })
+            timeFragment.show(requireActivity().supportFragmentManager, "timePicker")
+        }
+        newFragment.show(requireActivity().supportFragmentManager, "datePicker")
+    }
+    private fun pickDeadLineDateAndTime(){
+        var deadLine = ""
+        val newFragment = DatePickerFragment { yy, mm, dd ->
+            val MM = String.format("%02d", mm)
+            deadLine = "$deadLine$dd/$MM/$yy"
+            val timeFragment = TimePickerFragment(selectedYear = yy, selectedMonth = mm, selectedDay = dd, onSet = { hour, min ->
+                val minute = String.format("%02d", min)
+                deadLine = "$deadLine - $hour : $minute"
+                binding.tvDeadline.text = deadLine
+            })
+            timeFragment.show(requireActivity().supportFragmentManager, "timePicker")
+        }
+        newFragment.show(requireActivity().supportFragmentManager, "datePicker")
     }
 }

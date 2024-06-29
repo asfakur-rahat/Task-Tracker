@@ -42,16 +42,28 @@ class TaskDetailsFragment : Fragment(R.layout.fragment_task_details) {
             }
             true
         }
+        binding.topAppBar.setNavigationOnClickListener {
+            findNavController().popBackStack()
+        }
     }
 
     private fun deleteTask(id: Int) {
-        viewModel.deleteTask(id)
+        viewModel.deleteTask(id, args.taskItem)
     }
 
     private fun initObserver() {
-        viewModel.updated.observe(viewLifecycleOwner){
+        viewModel.deleted.observe(viewLifecycleOwner){
             if(it == true){
                 findNavController().popBackStack()
+            }
+        }
+        viewModel.loader.observe(viewLifecycleOwner){
+            if(it == true){
+                binding.mainView.visibility = View.GONE
+                binding.progressBar.visibility = View.VISIBLE
+            }else{
+                binding.progressBar.visibility = View.GONE
+                binding.mainView.visibility = View.VISIBLE
             }
         }
     }
@@ -62,7 +74,9 @@ class TaskDetailsFragment : Fragment(R.layout.fragment_task_details) {
         if(task.image == null){
             binding.ivTaskImage.visibility = View.GONE
         }else{
-            binding.ivTaskImage.load(task.image)
+            binding.ivTaskImage.load(task.image){
+                placeholder(R.drawable.image_placeholder)
+            }
         }
         binding.tvStartTime.text = task.startTime
         binding.tvDeadline.text = task.deadline

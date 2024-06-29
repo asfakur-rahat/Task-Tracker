@@ -13,14 +13,19 @@ import javax.inject.Inject
 class TaskDetailsViewModel @Inject constructor(
     private val repository: ListRepository
 ) : ViewModel() {
-    var updated = MutableLiveData<Boolean>(false)
+    var deleted = MutableLiveData<Boolean>(false)
         private set
 
-    fun deleteTask(taskID: Int) = viewModelScope.launch {
-        updated.value = false
+    var loader = MutableLiveData<Boolean>(false)
+        private set
+
+    fun deleteTask(taskID: Int, task: Task) = viewModelScope.launch {
+        loader.value = true
+        deleted.value = false
         repository.deleteTaskFromDB(taskID)
-        repository.deleteTaskFromCloud(taskID)
-        updated.value = true
+        repository.deleteTaskFromCloud(taskID,task)
+        loader.value = false
+        deleted.value = true
     }
 
 

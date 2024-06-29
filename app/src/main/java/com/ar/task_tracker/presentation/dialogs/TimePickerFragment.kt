@@ -28,7 +28,7 @@ class TimePickerFragment(
             isCurrentDate,
             hour,
             minute,
-            false,
+            true,
             this
         )
     }
