@@ -11,6 +11,8 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import okhttp3.internal.wait
 
+
+// Firebase Instance & Tasks
 class Firebase {
     companion object {
         suspend fun getTaskDetailsFromFireBase(): List<FireBaseResponse> =

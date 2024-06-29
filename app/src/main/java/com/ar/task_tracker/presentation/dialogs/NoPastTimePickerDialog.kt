@@ -11,7 +11,7 @@ class NoPastTimePickerDialog(
     hourOfDay: Int,
     minute: Int,
     is24HourView: Boolean,
-    onTimeSetListener: TimePickerDialog.OnTimeSetListener
+    onTimeSetListener: OnTimeSetListener
 ) : TimePickerDialog(context, onTimeSetListener, hourOfDay, minute, is24HourView) {
 
     private val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)

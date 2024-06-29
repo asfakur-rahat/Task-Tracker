@@ -88,11 +88,11 @@ class TaskListFragment : Fragment() {
     }
 
     private fun completeTask(task: Task) {
-        findNavController().navigate(
-            TaskListFragmentDirections.actionTaskListFragmentToTaskDetailsFragment(
-                task
-            )
-        )
+        if(task.status){
+            Toast.makeText(requireContext(), "The task in already completed", Toast.LENGTH_SHORT).show()
+        }else{
+            viewModel.markTaskAsDone(task)
+        }
     }
 
     //Navigation to Details Page

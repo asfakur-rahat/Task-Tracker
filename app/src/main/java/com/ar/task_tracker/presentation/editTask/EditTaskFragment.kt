@@ -217,9 +217,4 @@ class EditTaskFragment : Fragment(R.layout.fragment_edit_task) {
         binding.progressBar.visibility = View.GONE
         binding.mainView.visibility = View.VISIBLE
     }
-
-
-
-
-
 }

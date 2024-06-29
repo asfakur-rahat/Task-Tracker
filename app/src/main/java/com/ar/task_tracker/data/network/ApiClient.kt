@@ -6,6 +6,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
+// Retrofit Client builder
 class ApiClient {
     companion object {
         private fun buildClient(): OkHttpClient {
