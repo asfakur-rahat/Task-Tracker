@@ -14,6 +14,8 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import coil.load
+import coil.size.Scale
+import coil.size.ViewSizeResolver
 import com.ar.task_tracker.R
 import com.ar.task_tracker.databinding.FragmentTaskDetailsBinding
 import com.ar.task_tracker.domain.model.Task
@@ -76,6 +78,8 @@ class TaskDetailsFragment : Fragment(R.layout.fragment_task_details) {
         }else{
             binding.ivTaskImage.load(task.image){
                 placeholder(R.drawable.image_placeholder)
+                size(ViewSizeResolver(binding.ivTaskImage))
+                scale(Scale.FIT)
             }
         }
         binding.tvStartTime.text = task.startTime

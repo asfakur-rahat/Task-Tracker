@@ -33,14 +33,11 @@ class TaskListFragment : Fragment() {
         savedInstanceState: Bundle?,
     ) {
         binding = FragmentTaskListBinding.bind(view)
-        adapter =
-            TaskListAdapter {
+        adapter = TaskListAdapter {
                 showOptions(it)
             }
         super.onViewCreated(view, savedInstanceState)
-        binding.addTaskBtn.setOnClickListener {
-            findNavController().navigate(TaskListFragmentDirections.actionTaskListFragmentToAddTaskFragment())
-        }
+        initListener()
         initObserver()
     }
 
@@ -49,55 +46,77 @@ class TaskListFragment : Fragment() {
         viewModel.initList()
     }
 
+    // Listener for buttons
+    private fun initListener() {
+        binding.addTaskBtn.setOnClickListener {
+            findNavController().navigate(TaskListFragmentDirections.actionTaskListFragmentToAddTaskFragment())
+        }
+    }
+
+    //LiveDataObserver
     private fun initObserver() {
         viewModel.taskList.observe(viewLifecycleOwner) { taskList ->
             initView(taskList)
         }
         viewModel.isLoading.observe(viewLifecycleOwner) {
             if (it) {
-                binding.progressBar.visibility = View.VISIBLE
-                binding.rvTaskList.visibility = View.GONE
+                showLoader()
             } else {
-                binding.progressBar.visibility = View.GONE
-                binding.rvTaskList.visibility = View.VISIBLE
+                hideLoader()
             }
         }
     }
 
+    // for show and hide loader
+    private fun showLoader(){
+        binding.progressBar.visibility = View.VISIBLE
+        binding.rvTaskList.visibility = View.GONE
+    }
+    private fun hideLoader(){
+        binding.progressBar.visibility = View.GONE
+        binding.rvTaskList.visibility = View.VISIBLE
+    }
+
+    //BottomSheet Click Handler
     private fun showOptions(task: Task) {
         val bottomSheet = ModalBottomSheet(
-            onEdit = {
-                findNavController().navigate(
-                    TaskListFragmentDirections.actionTaskListFragmentToEditTaskFragment(
-                        task
-                    )
-                )
-            },
-            onDetails = {
-                findNavController().navigate(
-                    TaskListFragmentDirections.actionTaskListFragmentToTaskDetailsFragment(
-                        task
-                    )
-                )
-            },
-            onCompleted = {
-                if(task.status){
-                    Toast.makeText(requireContext(), "The Task is already Completed", Toast.LENGTH_SHORT).show()
-                }else{
-                    viewModel.markTaskAsDone(task.copy(status = true))
-                }
-            }
+            onEdit = { gotoEdit(task) },
+            onDetails = { gotoDetails(task) },
+            onCompleted = { completeTask(task) }
         )
         bottomSheet.show(requireActivity().supportFragmentManager, ModalBottomSheet.TAG)
     }
 
+    private fun completeTask(task: Task) {
+        findNavController().navigate(
+            TaskListFragmentDirections.actionTaskListFragmentToTaskDetailsFragment(
+                task
+            )
+        )
+    }
+
+    //Navigation to Details Page
+    private fun gotoDetails(task: Task) {
+        findNavController().navigate(
+            TaskListFragmentDirections.actionTaskListFragmentToTaskDetailsFragment(
+                task
+            )
+        )
+    }
+    //Navigation to Edit page
+    private fun gotoEdit(task: Task) {
+        findNavController().navigate(
+            TaskListFragmentDirections.actionTaskListFragmentToEditTaskFragment(
+                task
+            )
+        )
+    }
+
     private fun initView(taskList: List<Task>?) {
         if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            binding.rvTaskList.layoutManager =
-                LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            binding.rvTaskList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         } else {
-            binding.rvTaskList.layoutManager =
-                StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+            binding.rvTaskList.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         }
         binding.rvTaskList.adapter = adapter
         adapter.submitList(taskList)

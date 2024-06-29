@@ -1,5 +1,6 @@
 package com.ar.task_tracker.presentation.taskList
 
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
@@ -8,9 +9,13 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import coil.size.Scale
+import coil.size.Size
+import coil.size.ViewSizeResolver
 import com.ar.task_tracker.R
 import com.ar.task_tracker.databinding.TaskItemBinding
 import com.ar.task_tracker.domain.model.Task
+import coil.transform.Transformation
 
 class TaskListAdapter(
     private val onTaskClicked: (Task) -> Unit
@@ -27,6 +32,8 @@ class TaskListAdapter(
                 binding.taskImage.visibility = View.VISIBLE
                 binding.taskImage.load(task.image){
                     placeholder(R.drawable.image_placeholder)
+                    size(ViewSizeResolver(binding.taskImage))
+                    scale(Scale.FIT)
                 }
             }
             binding.taskTitle.text = task.title
