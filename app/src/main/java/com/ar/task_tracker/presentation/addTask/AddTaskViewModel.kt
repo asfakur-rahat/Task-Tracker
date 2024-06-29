@@ -15,14 +15,12 @@ class AddTaskViewModel @Inject constructor(
 ) : ViewModel() {
     var cloudDone = MutableLiveData<Boolean>(false)
         private set
-
     var availableID = MutableLiveData<Int>(0)
         private set
-
     var allDone = MutableLiveData<Boolean>(false)
         private set
-
     var loader = MutableLiveData<Boolean>(false)
+        private set
 
     fun currentTaskCount() = viewModelScope.launch {
         val response = repository.getTasksFromDb()

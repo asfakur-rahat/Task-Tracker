@@ -40,27 +40,21 @@ class AddTaskFragment : Fragment(R.layout.fragment_add_task) {
         }
     }
 
-    private fun pickImage() {
-        pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-    }
-
+    // Picked image handler
     private fun handleImage(uri: Uri) {
         imageuri = uri.toString()
         binding.ivTaskImage.setImageURI(uri)
-    }
-
-    private fun saveTask(taskItem: Task) {
-        viewModel.saveTaskToCloud(taskItem)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding = FragmentAddTaskBinding.bind(view)
         super.onViewCreated(view, savedInstanceState)
         initView()
+        initListener()
         initObserver()
-
     }
 
+    // LiveData observer
     private fun initObserver() {
         viewModel.availableID.observe(viewLifecycleOwner) {
             taskId = it
@@ -84,7 +78,7 @@ class AddTaskFragment : Fragment(R.layout.fragment_add_task) {
         }
         viewModel.allDone.observe(viewLifecycleOwner) {
             if (it == true) {
-                findNavController().popBackStack()
+                goBack()
             }
         }
 
@@ -113,33 +107,20 @@ class AddTaskFragment : Fragment(R.layout.fragment_add_task) {
         val time = Calendar.getInstance().time
         val formatter = SimpleDateFormat("dd/MM/yyyy - HH:mm")
         val currentTime = formatter.format(time)
-
         binding.tvStartTime.text = currentTime
-
-        binding.ivTaskImage.setOnClickListener {
-            pickImage()
-        }
-        binding.tvStartTime.setOnClickListener {
-            pickStartDateAndTime()
-        }
-        binding.tvDeadline.setOnClickListener {
-            pickDeadLineDateAndTime()
-        }
-        binding.topAppBar.setNavigationOnClickListener {
-            findNavController().popBackStack()
-        }
     }
 
+    // Save Menu clicker handler where data validation happen
     private fun saveTaskClicked() {
         val title = binding.tvTaskTitle.text.toString().trimMargin()
         val description = binding.tvTaskDescription.text.toString().trimMargin()
         if(title.isEmpty() || description.isEmpty()){
             if (title.isEmpty()){
-                binding.titleLayout.error = "Title is required"
-                binding.descriptionLayout.error = null
+                showErrorTitle()
+            }else if(description.isEmpty()){
+                showErrorDescription()
             }else{
-                binding.titleLayout.error = null
-                binding.descriptionLayout.error = "Description is required"
+                showError()
             }
         }else{
             saveTask(
@@ -156,6 +137,51 @@ class AddTaskFragment : Fragment(R.layout.fragment_add_task) {
         }
     }
 
+    // save task to Cloud
+    private fun saveTask(taskItem: Task) {
+        viewModel.saveTaskToCloud(taskItem)
+    }
+
+    // Error for empty title and description
+    private fun showError() {
+        binding.descriptionLayout.error = "Description is required"
+        binding.titleLayout.error = "Title is required"
+    }
+    private fun showErrorDescription() {
+        binding.titleLayout.error = null
+        binding.descriptionLayout.error = "Description is required"
+    }
+    private fun showErrorTitle() {
+        binding.titleLayout.error = "Title is required"
+        binding.descriptionLayout.error = null
+    }
+
+    // Action listener
+    private fun initListener() {
+        binding.ivTaskImage.setOnClickListener {
+            pickImage()
+        }
+        binding.tvStartTime.setOnClickListener {
+            pickStartDateAndTime()
+        }
+        binding.tvDeadline.setOnClickListener {
+            pickDeadLineDateAndTime()
+        }
+        binding.topAppBar.setNavigationOnClickListener {
+            goBack()
+        }
+    }
+
+    // Navigate Back
+    private fun goBack() {
+        findNavController().popBackStack()
+    }
+    // Image Picker Dialog for pick image
+    private fun pickImage() {
+        pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+    }
+
+    // Date Time Picker for Start time
     private fun pickStartDateAndTime(){
         var startDate = ""
         val newFragment = DatePickerFragment { yy, mm, dd ->
@@ -170,6 +196,7 @@ class AddTaskFragment : Fragment(R.layout.fragment_add_task) {
         }
         newFragment.show(requireActivity().supportFragmentManager, "datePicker")
     }
+    // Date Time Picker for Deadline
     private fun pickDeadLineDateAndTime(){
         var deadLine = ""
         val newFragment = DatePickerFragment { yy, mm, dd ->

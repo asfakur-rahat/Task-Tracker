@@ -50,9 +50,9 @@ class EditTaskFragment : Fragment(R.layout.fragment_edit_task) {
         binding = FragmentEditTaskBinding.bind(view)
         super.onViewCreated(view, savedInstanceState)
         initView()
+        initListener()
         initObservers()
     }
-
     private fun initView() {
         binding.tvTaskTitle.setText(args.task.title)
         binding.tvTaskDescription.setText(args.task.description)
@@ -67,7 +67,11 @@ class EditTaskFragment : Fragment(R.layout.fragment_edit_task) {
         }
         binding.tvStartTime.text = args.task.startTime
         binding.tvDeadline.text = args.task.deadline
+        initStatus()
+    }
 
+    // Initialize the Status dropdown menu for user to choose
+    private fun initStatus() {
         val items = listOf("Completed", "Pending")
         val adapter = ArrayAdapter(requireContext(), R.layout.status_item, items)
         val autoCompleteTextView = binding.status.editText as? AutoCompleteTextView
@@ -75,41 +79,106 @@ class EditTaskFragment : Fragment(R.layout.fragment_edit_task) {
         status = args.task.status
         val initialStatus = if (args.task.status) "Completed" else "Pending"
         autoCompleteTextView?.setText(initialStatus, false)
-
-
         autoCompleteTextView?.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
             val selectedStatus = parent.getItemAtPosition(position).toString()
             status = selectedStatus == "Completed"
         }
+    }
 
+    // Listener for all button press etc
+    private fun initListener() {
         binding.ivTaskImage.setOnClickListener {
             pickImage()
         }
         binding.tvDeadline.setOnClickListener {
-            openDialog()
+            pickDeadline()
         }
         binding.topAppBar.setNavigationOnClickListener {
-            findNavController().popBackStack()
+            goBack()
         }
-
         binding.topAppBar.setOnMenuItemClickListener {
             when(it.itemId){
                 R.id.save -> {
-                    saveTask(
-                        args.task.copy(
-                            title = binding.tvTaskTitle.text.toString().trimMargin(),
-                            description = binding.tvTaskDescription.text.toString().trimMargin(),
-                            deadline = binding.tvDeadline.text.toString().trimMargin(),
-                            status = status
-                        )
-                    )
+                    saveTaskClicked()
                 }
             }
             true
         }
     }
 
+    // Listener Actions
+    private fun saveTaskClicked() {
+        val title = binding.tvTaskTitle.text.toString().trimMargin()
+        val description = binding.tvTaskDescription.text.toString().trimMargin()
+        if(title.isEmpty() || description.isEmpty()){
+            if (title.isEmpty()){
+                showErrorTitle()
+            }else if(description.isEmpty()){
+                showErrorDescription()
+            }else{
+                showError()
+            }
+        }else{
+            saveTask(args.task.copy(
+                    title = title,
+                    description = description,
+                    deadline = binding.tvDeadline.text.toString().trimMargin(),
+                    status = status
+            ))
+        }
+    }
 
+    //Save task to the Cloud
+    private fun saveTask(task: Task) {
+        viewModel.saveTaskToCloud(task,imageuri)
+    }
+
+    // Error for empty title and description
+    private fun showError() {
+        binding.descriptionLayout.error = "Description is required"
+        binding.titleLayout.error = "Title is required"
+    }
+    private fun showErrorDescription() {
+        binding.titleLayout.error = null
+        binding.descriptionLayout.error = "Description is required"
+    }
+    private fun showErrorTitle() {
+        binding.titleLayout.error = "Title is required"
+        binding.descriptionLayout.error = null
+    }
+
+    private fun pickImage() {
+        pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+    }
+    private fun pickDeadline() {
+        openDialog()
+    }
+    private fun goBack() {
+        findNavController().popBackStack()
+    }
+
+    // Handled Picked image by user
+    private fun handleImage(uri: Uri) {
+        imageuri = uri.toString()
+        binding.ivTaskImage.setImageURI(uri)
+    }
+    // Open Date Time picker dialog for user
+    private fun openDialog() {
+        var deadline = ""
+        val newFragment = DatePickerFragment { yy, mm, dd ->
+            val MM = String.format("%02d", mm)
+            deadline = "$deadline$dd/$MM/$yy"
+            val timeFragment = TimePickerFragment(selectedYear = yy, selectedMonth = mm, selectedDay = dd, onSet = { hour, min ->
+                val minute = String.format("%02d", min)
+                deadline = "$deadline - $hour : $minute"
+                binding.tvDeadline.text = deadline
+            })
+            timeFragment.show(requireActivity().supportFragmentManager, "timePicker")
+        }
+        newFragment.show(requireActivity().supportFragmentManager, "datePicker")
+    }
+
+    // Observer for LiveData
     private fun initObservers() {
         viewModel.cloudDone.observe(viewLifecycleOwner){
             if (it == true){
@@ -127,45 +196,30 @@ class EditTaskFragment : Fragment(R.layout.fragment_edit_task) {
         }
         viewModel.allDone.observe(viewLifecycleOwner){
             if(it==true){
-                findNavController().popBackStack()
+                goBack()
             }
         }
         viewModel.loader.observe(viewLifecycleOwner){
             if (it ==true){
-                binding.mainView.visibility = View.GONE
-                binding.progressBar.visibility = View.VISIBLE
+                showLoader()
             }else{
-                binding.mainView.visibility = View.VISIBLE
-                binding.progressBar.visibility = View.GONE
+                hideLoader()
             }
         }
     }
 
-    private fun saveTask(task: Task) {
-        viewModel.saveTaskToCloud(task,imageuri)
+    // for show and hide loader
+    private fun showLoader(){
+        binding.progressBar.visibility = View.VISIBLE
+        binding.mainView.visibility = View.GONE
+    }
+    private fun hideLoader(){
+        binding.progressBar.visibility = View.GONE
+        binding.mainView.visibility = View.VISIBLE
     }
 
-    private fun openDialog() {
-        var deadline = ""
-        val newFragment = DatePickerFragment { yy, mm, dd ->
-            val MM = String.format("%02d", mm)
-            deadline = "$deadline$dd/$MM/$yy"
-            val timeFragment = TimePickerFragment(selectedYear = yy, selectedMonth = mm, selectedDay = dd, onSet = { hour, min ->
-                val minute = String.format("%02d", min)
-                deadline = "$deadline - $hour : $minute"
-                binding.tvDeadline.text = deadline
-            })
-            timeFragment.show(requireActivity().supportFragmentManager, "timePicker")
-        }
-        newFragment.show(requireActivity().supportFragmentManager, "datePicker")
-    }
 
-    private fun pickImage() {
-        pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-    }
 
-    private fun handleImage(uri: Uri) {
-        imageuri = uri.toString()
-        binding.ivTaskImage.setImageURI(uri)
-    }
+
+
 }
