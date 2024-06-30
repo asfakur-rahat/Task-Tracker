@@ -24,7 +24,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:title="Add New Task"
-            app:menu="@menu/top_menu"
+            app:menu="@menu/edit_menu"
             app:navigationIcon="@drawable/ic_back"
             app:titleCentered="true"
             app:titleTextColor="@color/md_theme_onSecondaryContainer"/>
