@@ -13,7 +13,7 @@ To build and run the Application in your mobile you have to follow some steps.
 - Now open the project to your android studio from `File/open`\
   <img src="images/openproject.png" alt="Tasklist" width="25%"/>
 - Android studio should recognize the project as android project and start build Gradle process wait for some time and let the process finish.
-- Download the `google-services.json` file from here and put it to app folder\
+- Download the `google-services.json` file from [here](https://drive.google.com/file/d/1vKn2qjSJmnrjaBsmcGwB-hYWpsCpa7NM/view?usp=sharing "google-service.json") and put it to app folder\
   <img src="images/service.png" alt="google-services.json" width = "40%"/>
 - After that you can click on run to run the app to your Emulator or a Physical device.
 
