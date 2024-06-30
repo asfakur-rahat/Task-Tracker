@@ -12,4 +12,8 @@
     <string name="status">Completed</string>
     <string name="task_description_hint">Enter the task description…</string>
     <string name="title_hint">Enter the task title</string>
+    <string name="add_task">Add Task</string>
+    <string name="edit_task">Edit Task</string>
+    <string name="task_details">Task Details</string>
+    <string name="mark_as_completed">Mark As Completed</string>
 </resources>

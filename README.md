@@ -11,8 +11,10 @@ To build and run the Application in your mobile you have to follow some steps.
     git clone https://github.com/asfakur-rahat/Task-Tracker.git
 ```
 - Now open the project to your android studio from `File/open`\
-  <img src="openproject.png" alt="Tasklist" width="25%"/>
-- Android studio should recognize the project as android project and start build Gradle process wait for some time and let the process finish
+  <img src="images/openproject.png" alt="Tasklist" width="25%"/>
+- Android studio should recognize the project as android project and start build Gradle process wait for some time and let the process finish.
+- Download the `google-services.json` file from here and put it to app folder\
+  <img src="images/service.png" alt="google-services.json" width = "40%"/>
 - After that you can click on run to run the app to your Emulator or a Physical device.
 
 ## About Task-Tracker:
@@ -29,19 +31,19 @@ and also you can mark the task as done if you want.
 
 ### Screen shots of the features:
 - **Task List Screen** \
-  <img src="tasklist.jpg" alt="Tasklist" width="25%"/>
+  <img src="images/tasklist.jpg" alt="Tasklist" width="25%"/>
 - **Add New Task Screen** \
-  <img src="addtask.jpg" alt="Add Task" width="25%"/>
+  <img src="images/addtask.jpg" alt="Add Task" width="25%"/>
 - **Task Details Screen & delete option** \
-  <img src="details.jpg" alt="Task details" width="25%"/>
+  <img src="images/details.jpg" alt="Task details" width="25%"/>
 - **Edit Task Screen** \
-  <img src="edittask.jpg" alt="Edit Task" width="25%"/>
+  <img src="images/edittask.jpg" alt="Edit Task" width="25%"/>
 - **Bottom Sheet to give user options** \
-  <img src="snackbar.jpg" alt="Bottom Sheet Dialog" width="25%"/>
+  <img src="images/snackbar.jpg" alt="Bottom Sheet Dialog" width="25%"/>
 
 ### Sample Video demontration of app functionality:
 
-  <img src="appdemo.gif" alt="Bottom Sheet Dialog" width="25%"/>
+  <img src="images/appdemo.gif" alt="Bottom Sheet Dialog" width="25%"/>
 
 ## Assumptions & decisions made during development.
 
@@ -50,5 +52,5 @@ and also you can mark the task as done if you want.
 - Disabled allpast date & time so that user can't pick the past time
 - handled null image case manually so it doesn't make any error in firebase storage
 - for MVVM Architecture i tried to follow this image.\
-   <img src="mvvm.jpg" alt="Bottom Sheet Dialog" width="50%"/>
+   <img src="images/mvvm.jpg" alt="Bottom Sheet Dialog" width="50%"/>
 - And tried to commit to git whenever a stable feature was complete.

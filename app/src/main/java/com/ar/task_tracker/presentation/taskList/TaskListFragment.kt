@@ -70,11 +70,13 @@ class TaskListFragment : Fragment() {
     // for show and hide loader
     private fun showLoader(){
         binding.progressBar.visibility = View.VISIBLE
-        binding.rvTaskList.visibility = View.GONE
+        binding.addTaskBtn.visibility = View.GONE
+        binding.mainView.visibility = View.GONE
     }
     private fun hideLoader(){
         binding.progressBar.visibility = View.GONE
-        binding.rvTaskList.visibility = View.VISIBLE
+        binding.mainView.visibility = View.VISIBLE
+        binding.addTaskBtn.visibility = View.VISIBLE
     }
 
     //BottomSheet Click Handler
