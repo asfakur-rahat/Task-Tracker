@@ -18,16 +18,16 @@
             android:id="@+id/topAppBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?colorPrimaryContainer"
+            android:background="@color/md_theme_secondaryContainer"
             android:minHeight="?android:actionBarSize"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:title="Edit Task"
             app:menu="@menu/edit_menu"
+            app:navigationIcon="@drawable/ic_back"
             app:titleCentered="true"
-            app:titleTextColor="?colorOnBackground"
-            app:navigationIcon="@drawable/ic_back"/>
+            app:titleTextColor="@color/md_theme_onSecondaryContainer"/>
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView

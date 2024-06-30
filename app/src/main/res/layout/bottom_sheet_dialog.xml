@@ -12,28 +12,28 @@
         android:id="@+id/edit_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Edit Task"
+        android:text="@string/edit_task"
         android:textSize="24sp"
         android:textColor="@color/md_theme_onSecondaryContainer"
         android:layout_marginTop="60dp"
-        android:background="?colorSecondaryContainer"/>
+        android:background="@color/md_theme_secondaryContainer"/>
     <com.google.android.material.button.MaterialButton
         android:id="@+id/details_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Task Details"
+        android:text="@string/task_details"
         android:textSize="24sp"
         android:textColor="@color/md_theme_onSecondaryContainer"
         android:layout_marginTop="120dp"
-        android:background="?colorSecondaryContainer"/>
+        android:background="@color/md_theme_secondaryContainer"/>
     <com.google.android.material.button.MaterialButton
         android:id="@+id/completed_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Mark As Completed"
+        android:text="@string/mark_as_completed"
         android:textSize="24sp"
         android:textColor="@color/md_theme_onSecondaryContainer"
         android:layout_marginTop="180dp"
         android:layout_marginBottom="60dp"
-        android:background="?colorSecondaryContainer"/>
+        android:background="@color/md_theme_secondaryContainer"/>
 </FrameLayout>
