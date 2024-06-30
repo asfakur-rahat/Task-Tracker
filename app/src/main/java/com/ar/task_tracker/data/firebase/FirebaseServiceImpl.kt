@@ -1,25 +1,27 @@
 package com.ar.task_tracker.data.firebase
 
 import android.net.Uri
+import com.ar.task_tracker.data.firebase.firebase_service.FirebaseService
 import com.ar.task_tracker.domain.model.FireBaseResponse
 import com.ar.task_tracker.domain.model.Task
-import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
-import okhttp3.internal.wait
+import javax.inject.Inject
 
 
 // Firebase Instance & Tasks
-class Firebase {
-    companion object {
-        suspend fun getTaskDetailsFromFireBase(): List<FireBaseResponse> =
+class FirebaseServiceImpl @Inject constructor(
+    private val firestore: FirebaseFirestore,
+    private val storage: FirebaseStorage
+): FirebaseService {
+
+        override suspend fun getTaskDetailsFromFireBase(): List<FireBaseResponse> =
             withContext(Dispatchers.IO) {
                 val taskList = mutableListOf<FireBaseResponse>()
-                val fb = FirebaseFirestore.getInstance()
-                val tasksSnapshot = fb.collection("tasks").get().await()
+                val tasksSnapshot = firestore.collection("tasks").get().await()
                 for (item in tasksSnapshot) {
                     taskList.add(
                         FireBaseResponse(
@@ -36,10 +38,7 @@ class Firebase {
                 return@withContext taskList
             }
 
-        suspend fun saveTaskDetailsInFireBase(task: Task): Boolean = withContext(Dispatchers.IO) {
-            val firestore = FirebaseFirestore.getInstance()
-            val storage = FirebaseStorage.getInstance()
-
+        override suspend fun saveTaskDetailsInFireBase(task: Task): Boolean = withContext(Dispatchers.IO) {
             return@withContext try {
                 if (task.image != null) {
                     val storageChild = storage.reference.child("image/${task.id}")
@@ -69,14 +68,11 @@ class Firebase {
             }
         }
 
-        suspend fun deleteTask(taskId: Int, task: Task): Boolean = withContext(Dispatchers.IO){
-            val firestore = FirebaseFirestore.getInstance()
-            val storage = FirebaseStorage.getInstance()
+        override suspend fun deleteTask(taskId: Int, task: Task): Boolean = withContext(Dispatchers.IO){
             firestore.collection("tasks").document(taskId.toString()).delete().await()
             if(task.image != null){
                 storage.reference.child("image/${taskId}").delete().await()
             }
             return@withContext true
         }
-    }
 }

@@ -1,12 +1,14 @@
 package com.ar.task_tracker.data
 
-import com.ar.task_tracker.data.firebase.Firebase
+import com.ar.task_tracker.data.firebase.FirebaseServiceImpl
+import com.ar.task_tracker.data.firebase.firebase_service.FirebaseService
 import com.ar.task_tracker.data.local.AppDatabase
 import com.ar.task_tracker.data.network.api.TaskApi
 import com.ar.task_tracker.domain.model.FireBaseResponse
 import com.ar.task_tracker.domain.model.Task
 import com.ar.task_tracker.domain.model.TaskResponse
 import com.ar.task_tracker.domain.repository.ListRepository
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.Response
@@ -16,7 +18,8 @@ import javax.inject.Inject
 // Implementation of ListRepository
 class ListRepositoryImpl @Inject constructor(
     private val api: TaskApi,
-    private val db: AppDatabase
+    private val db: AppDatabase,
+    private val cloud: FirebaseService
 ): ListRepository {
 
     override suspend fun getTasks(): Response<List<TaskResponse>> = withContext(Dispatchers.IO) {
@@ -31,16 +34,20 @@ class ListRepositoryImpl @Inject constructor(
         return@withContext db.taskDao().getTasks()
     }
 
+    override suspend fun searchTasks(query: String): List<Task>  = withContext(Dispatchers.IO) {
+        return@withContext db.taskDao().getTaskByTitleOrDescription(query)
+    }
+
     override suspend fun saveTaskDetailsInCloud(task: Task): Boolean {
-        return Firebase.saveTaskDetailsInFireBase(task)
+        return cloud.saveTaskDetailsInFireBase(task)
     }
 
     override suspend fun getTaskFromCloud(): List<FireBaseResponse> {
-        return Firebase.getTaskDetailsFromFireBase()
+        return cloud.getTaskDetailsFromFireBase()
     }
 
     override suspend fun deleteTaskFromCloud(taskID: Int, task: Task): Boolean {
-        return Firebase.deleteTask(taskID, task)
+        return cloud.deleteTask(taskID, task)
     }
 
     override suspend fun deleteTaskFromDB(taskID: Int) {

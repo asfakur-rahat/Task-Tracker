@@ -14,6 +14,11 @@ class ModalBottomSheet(
 
     private lateinit var binding: BottomSheetDialogBinding
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        retainInstance = true
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding = BottomSheetDialogBinding.bind(view)
         super.onViewCreated(view, savedInstanceState)

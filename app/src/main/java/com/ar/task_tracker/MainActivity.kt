@@ -1,5 +1,6 @@
 package com.ar.task_tracker
 
+import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import androidx.annotation.RequiresApi
@@ -25,4 +26,8 @@ class MainActivity : AppCompatActivity() {
             insets
         }
     }
+
+//    override fun onConfigurationChanged(newConfig: Configuration) {
+//        super.onConfigurationChanged(newConfig)
+//    }
 }

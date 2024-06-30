@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.View
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -114,6 +115,7 @@ class AddTaskFragment : Fragment(R.layout.fragment_add_task) {
     private fun saveTaskClicked() {
         val title = binding.tvTaskTitle.text.toString().trimMargin()
         val description = binding.tvTaskDescription.text.toString().trimMargin()
+        val deadLine = binding.tvDeadline.text.toString().trimMargin()
         if(title.isEmpty() || description.isEmpty()){
             if (title.isEmpty()){
                 showErrorTitle()
@@ -123,17 +125,21 @@ class AddTaskFragment : Fragment(R.layout.fragment_add_task) {
                 showError()
             }
         }else{
-            saveTask(
-                Task(
-                    id = taskId,
-                    title = title,
-                    description = description,
-                    image = imageuri,
-                    startTime = binding.tvStartTime.text.toString().trimMargin(),
-                    deadline = binding.tvDeadline.text.toString().trimMargin(),
-                    status = false
+            if(deadLine == resources.getString(R.string.deadline_time_date)){
+                Toast.makeText(requireContext(), "Please select deadline time", Toast.LENGTH_SHORT).show()
+            }else{
+                saveTask(
+                    Task(
+                        id = taskId,
+                        title = title,
+                        description = description,
+                        image = imageuri,
+                        startTime = binding.tvStartTime.text.toString().trimMargin(),
+                        deadline = binding.tvDeadline.text.toString().trimMargin(),
+                        status = false
+                    )
                 )
-            )
+            }
         }
     }
 
