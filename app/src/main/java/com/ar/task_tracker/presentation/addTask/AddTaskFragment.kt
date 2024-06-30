@@ -60,7 +60,7 @@ class AddTaskFragment : Fragment(R.layout.fragment_add_task) {
             taskId = it
         }
         viewModel.cloudDone.observe(viewLifecycleOwner) {
-            println(it)
+            //println(it)
             if(it == true){
                 viewModel.fetchTaskFromCloud(
                     taskId,

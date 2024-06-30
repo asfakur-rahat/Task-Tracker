@@ -43,7 +43,7 @@ class Firebase {
             return@withContext try {
                 if (task.image != null) {
                     val storageChild = storage.reference.child("image/${task.id}")
-                    println("Image -> ${task.image}")
+                    //println("Image -> ${task.image}")
                     val uploadTask = storageChild.putFile(Uri.parse(task.image)).await()
                     val uri = storageChild.downloadUrl.await()
                     firestore.collection("tasks").document(task.id.toString())

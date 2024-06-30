@@ -30,7 +30,7 @@ class AddTaskViewModel @Inject constructor(
         var id = 1
         while(id in ids){
             id++
-            println(id)
+            //println(id)
         }
         availableID.value = id
     }

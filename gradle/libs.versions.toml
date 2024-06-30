@@ -16,6 +16,8 @@ coil = "2.6.0"
 googleGmsGoogleServices = "4.4.2"
 firebaseStorage = "21.0.0"
 firebaseFirestore = "25.0.0"
+firebaseFirestoreKtx = "25.0.0"
+firebaseStorageKtx = "21.0.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -33,6 +35,8 @@ gson = {module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofi
 coil = {module = "io.coil-kt:coil", version.ref = "coil"}
 firebase-storage = { group = "com.google.firebase", name = "firebase-storage", version.ref = "firebaseStorage" }
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
+firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
+firebase-storage-ktx = { group = "com.google.firebase", name = "firebase-storage-ktx", version.ref = "firebaseStorageKtx" }
 
 
 
