@@ -31,15 +31,20 @@ and also you can mark the task as done if you want.
 
 ### Screen shots of the features:
 - **Task List Screen** \
-  <img src="images/tasklist.jpg" alt="Tasklist" width="25%"/>
+  <img src="images/tasklist-light.jpg" alt="Tasklist" width="25%"/>
+  <img src="images/tasklist-dark.jpg" alt="Tasklist" width="25%"/>
 - **Add New Task Screen** \
-  <img src="images/addtask.jpg" alt="Add Task" width="25%"/>
+  <img src="images/addtask-light.jpg" alt="Add Task" width="25%"/>
+  <img src="images/addtask-dark.jpg" alt="Add Task" width="25%"/>
 - **Task Details Screen & delete option** \
-  <img src="images/details.jpg" alt="Task details" width="25%"/>
+  <img src="images/taskdetails-light.jpg" alt="Task details" width="25%"/>
+  <img src="images/taskdetails-dark.jpg" alt="Task details" width="25%"/>
 - **Edit Task Screen** \
-  <img src="images/edittask.jpg" alt="Edit Task" width="25%"/>
+  <img src="images/edittask-light.jpg" alt="Edit Task" width="25%"/>
+  <img src="images/edittask-dark.jpg" alt="Edit Task" width="25%"/>
 - **Bottom Sheet to give user options** \
-  <img src="images/snackbar.jpg" alt="Bottom Sheet Dialog" width="25%"/>
+  <img src="images/options-light.jpg" alt="Bottom Sheet Dialog" width="25%"/>
+  <img src="images/options-dark.jpg" alt="Bottom Sheet Dialog" width="25%"/>
 
 ### Sample Video demontration of app functionality:
 
