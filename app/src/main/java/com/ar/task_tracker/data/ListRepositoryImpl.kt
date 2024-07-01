@@ -53,4 +53,8 @@ class ListRepositoryImpl @Inject constructor(
     override suspend fun deleteTaskFromDB(taskID: Int) {
         return db.taskDao().deleteTask(taskID)
     }
+
+//    override suspend fun updateTaskInCloud(task: Task): Boolean {
+//        return cloud.updateTask(task.id, task)
+//    }
 }

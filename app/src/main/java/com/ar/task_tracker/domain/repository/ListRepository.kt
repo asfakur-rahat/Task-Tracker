@@ -23,5 +23,5 @@ interface ListRepository {
 
     suspend fun deleteTaskFromCloud(taskID: Int, task: Task): Boolean
 
-
+    //suspend fun updateTaskInCloud(task: Task): Boolean
 }

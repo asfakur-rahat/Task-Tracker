@@ -13,10 +13,10 @@ import javax.inject.Inject
 class TaskDetailsViewModel @Inject constructor(
     private val repository: ListRepository
 ) : ViewModel() {
-    var deleted = MutableLiveData<Boolean>(false)
+    var deleted = MutableLiveData(false)
         private set
 
-    var loader = MutableLiveData<Boolean>(false)
+    var loader = MutableLiveData(false)
         private set
 
     fun deleteTask(taskID: Int, task: Task) = viewModelScope.launch {

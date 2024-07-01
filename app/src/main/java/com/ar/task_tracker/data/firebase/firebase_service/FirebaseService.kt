@@ -7,4 +7,5 @@ interface FirebaseService {
     suspend fun getTaskDetailsFromFireBase(): List<FireBaseResponse>
     suspend fun saveTaskDetailsInFireBase(task: Task): Boolean
     suspend fun deleteTask(taskId: Int, task: Task): Boolean
+    //suspend fun updateTask(taskId: Int, task: Task): Boolean
 }

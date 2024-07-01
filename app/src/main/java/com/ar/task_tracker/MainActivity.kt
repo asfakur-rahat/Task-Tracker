@@ -25,6 +25,8 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        val sharedPreferences = getSharedPreferences("TaskPrefs", MODE_PRIVATE)
     }
 
 //    override fun onConfigurationChanged(newConfig: Configuration) {

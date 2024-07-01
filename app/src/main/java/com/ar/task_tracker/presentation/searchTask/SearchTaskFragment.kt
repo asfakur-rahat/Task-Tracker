@@ -15,15 +15,17 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.ar.task_tracker.R
 import com.ar.task_tracker.databinding.FragmentSearchTaskBinding
 import com.ar.task_tracker.domain.model.Task
-import com.ar.task_tracker.presentation.taskList.ModalBottomSheet
-import com.ar.task_tracker.presentation.taskList.SearchAdapter
+import com.ar.task_tracker.presentation.dialogs.ModalBottomSheet
+import com.ar.task_tracker.presentation.dialogs.ModalBottomSheetListener
+import com.ar.task_tracker.presentation.dialogs.getTask
+import com.ar.task_tracker.presentation.dialogs.saveTask
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
-class SearchTaskFragment : Fragment(R.layout.fragment_search_task) {
+class SearchTaskFragment : Fragment(R.layout.fragment_search_task), ModalBottomSheetListener {
 
     private lateinit var binding: FragmentSearchTaskBinding
     private val viewModel: SearchTaskViewModel by viewModels()
@@ -50,19 +52,19 @@ class SearchTaskFragment : Fragment(R.layout.fragment_search_task) {
     }
 
     private fun showOptions(it: Task) {
-        val bottomSheet = ModalBottomSheet(
-            onEdit = { gotoEdit(it) },
-            onDetails = { gotoDetails(it) },
-            onCompleted = { completeTask(it) }
-        )
-        if(childFragmentManager.findFragmentByTag(ModalBottomSheet.TAG) == null){
-            bottomSheet.show(requireActivity().supportFragmentManager, ModalBottomSheet.TAG)
-        }
+        saveTask(requireContext(), it)
+        val bottomSheet = ModalBottomSheet.newInstance()
+        bottomSheet.setTargetFragment(this, 0)
+        bottomSheet.show(parentFragmentManager, ModalBottomSheet.TAG)
+
     }
 
     override fun onResume() {
         if(query != null){
             searchTask(query!!)
+        }
+        else{
+            showNoTaskFound(emptyList())
         }
         super.onResume()
     }
@@ -171,6 +173,18 @@ class SearchTaskFragment : Fragment(R.layout.fragment_search_task) {
 
     private fun searchTask(query: String) {
         viewModel.searchTask(query)
+    }
+
+    override fun onEdit() {
+        gotoEdit(getTask(requireContext())!!)
+    }
+
+    override fun onDetails() {
+        gotoDetails(getTask(requireContext())!!)
+    }
+
+    override fun onCompleted() {
+        completeTask(getTask(requireContext())!!)
     }
 
 }

@@ -15,7 +15,7 @@ class SearchTaskViewModel @Inject constructor(
     private val repository: ListRepository
 ) : ViewModel() {
 
-    var loader = MutableLiveData<Boolean>(false)
+    var loader = MutableLiveData(false)
         private set
     var taskList = MutableLiveData<List<Task>>()
         private set

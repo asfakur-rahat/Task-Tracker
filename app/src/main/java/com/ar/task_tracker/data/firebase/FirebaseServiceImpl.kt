@@ -42,8 +42,7 @@ class FirebaseServiceImpl @Inject constructor(
             return@withContext try {
                 if (task.image != null) {
                     val storageChild = storage.reference.child("image/${task.id}")
-                    //println("Image -> ${task.image}")
-                    val uploadTask = storageChild.putFile(Uri.parse(task.image)).await()
+                    storageChild.putFile(Uri.parse(task.image)).await()
                     val uri = storageChild.downloadUrl.await()
                     firestore.collection("tasks").document(task.id.toString())
                         .set(
@@ -75,4 +74,19 @@ class FirebaseServiceImpl @Inject constructor(
             }
             return@withContext true
         }
+
+//        override suspend fun updateTask(taskId: Int, task: Task): Boolean  = withContext(Dispatchers.IO){
+//            return@withContext try {
+//                firestore.collection("tasks").document(taskId.toString())
+//                    .set(
+//                        hashMapOf(
+//                            "description" to task.description,
+//                            "image" to task.image
+//                        )
+//                    ).await()
+//                true
+//            }catch (e: Exception){
+//                false
+//            }
+//        }
 }

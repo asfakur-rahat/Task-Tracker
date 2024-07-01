@@ -16,13 +16,15 @@ import com.ar.task_tracker.R
 import com.ar.task_tracker.databinding.FragmentAddTaskBinding
 import com.ar.task_tracker.domain.model.Task
 import com.ar.task_tracker.presentation.dialogs.DatePickerFragment
+import com.ar.task_tracker.presentation.dialogs.DatePickerListener
 import com.ar.task_tracker.presentation.dialogs.TimePickerFragment
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Locale
 
 @AndroidEntryPoint
-class AddTaskFragment : Fragment(R.layout.fragment_add_task) {
+class AddTaskFragment : Fragment(R.layout.fragment_add_task), DatePickerListener {
 
     private lateinit var binding: FragmentAddTaskBinding
     private lateinit var pickMedia: ActivityResultLauncher<PickVisualMediaRequest>
@@ -168,14 +170,27 @@ class AddTaskFragment : Fragment(R.layout.fragment_add_task) {
             pickImage()
         }
         binding.tvStartTime.setOnClickListener {
-            pickStartDateAndTime()
+            openStartDateDialog()
         }
         binding.tvDeadline.setOnClickListener {
-            pickDeadLineDateAndTime()
+            openDeadlineDialog()
         }
         binding.topAppBar.setNavigationOnClickListener {
             goBack()
         }
+    }
+
+    private var tag = "start"
+    private fun openStartDateDialog() {
+        tag = "start"
+        val datePicker = DatePickerFragment.newInstance(this)
+        datePicker.show(childFragmentManager, "DatePicker")
+    }
+
+    private fun openDeadlineDialog() {
+        tag = "deadline"
+        val datePicker = DatePickerFragment.newInstance(this)
+        datePicker.show(childFragmentManager, "DatePicker")
     }
 
     // Navigate Back
@@ -187,34 +202,19 @@ class AddTaskFragment : Fragment(R.layout.fragment_add_task) {
         pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
     }
 
-    // Date Time Picker for Start time
-    private fun pickStartDateAndTime(){
-        var startDate = ""
-        val newFragment = DatePickerFragment { yy, mm, dd ->
-            val MM = String.format("%02d", mm)
-            startDate = "$startDate$dd/$MM/$yy"
-            val timeFragment = TimePickerFragment(selectedYear = yy, selectedMonth = mm, selectedDay = dd, onSet = { hour, min ->
-                val minute = String.format("%02d", min)
-                startDate = "$startDate - $hour : $minute"
-                binding.tvStartTime.text = startDate
-            })
-            timeFragment.show(requireActivity().supportFragmentManager, "timePicker")
-        }
-        newFragment.show(requireActivity().supportFragmentManager, "datePicker")
-    }
-    // Date Time Picker for Deadline
-    private fun pickDeadLineDateAndTime(){
-        var deadLine = ""
-        val newFragment = DatePickerFragment { yy, mm, dd ->
-            val MM = String.format("%02d", mm)
-            deadLine = "$deadLine$dd/$MM/$yy"
-            val timeFragment = TimePickerFragment(selectedYear = yy, selectedMonth = mm, selectedDay = dd, onSet = { hour, min ->
-                val minute = String.format("%02d", min)
-                deadLine = "$deadLine - $hour : $minute"
-                binding.tvDeadline.text = deadLine
-            })
-            timeFragment.show(requireActivity().supportFragmentManager, "timePicker")
-        }
-        newFragment.show(requireActivity().supportFragmentManager, "datePicker")
+    override fun onDateSet(year: Int, month: Int, day: Int) {
+        var dateTime = ""
+        val formatedMonth = String.format(Locale.UK,"%02d", month)
+        dateTime = "$dateTime$day/$formatedMonth/$year"
+        val timeFragment = TimePickerFragment(selectedYear = year, selectedMonth = month, selectedDay = day, onSet = { hour, min ->
+            val minute = String.format(Locale.UK,"%02d", min)
+            dateTime = "$dateTime - $hour : $minute"
+            if(tag == "start"){
+                binding.tvStartTime.text = dateTime
+            }else{
+                binding.tvDeadline.text = dateTime
+            }
+        })
+        timeFragment.show(requireActivity().supportFragmentManager, "timePicker")
     }
 }

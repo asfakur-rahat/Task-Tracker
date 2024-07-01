@@ -1,6 +1,5 @@
-package com.ar.task_tracker.presentation.taskList
+package com.ar.task_tracker.presentation.searchTask
 
-import android.graphics.Bitmap
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
@@ -10,12 +9,10 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import coil.size.Scale
-import coil.size.Size
 import coil.size.ViewSizeResolver
 import com.ar.task_tracker.R
 import com.ar.task_tracker.databinding.TaskItemBinding
 import com.ar.task_tracker.domain.model.Task
-import coil.transform.Transformation
 
 class SearchAdapter(
     private val onTaskClicked: (Task) -> Unit
