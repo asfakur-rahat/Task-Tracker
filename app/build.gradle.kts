@@ -83,6 +83,10 @@ dependencies {
     implementation("com.google.android.material:material:1.3.0")
 
     implementation(platform("com.google.firebase:firebase-bom:33.1.1"))
+
+    implementation("com.github.ihsanbal:LoggingInterceptor:3.1.0") {
+        exclude(group = "org.json", module = "json")
+    }
 }
 
 kapt {

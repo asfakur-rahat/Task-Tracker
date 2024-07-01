@@ -1,8 +1,10 @@
 package com.ar.task_tracker.data.network
 
 import com.ar.task_tracker.utils.AppConstant
+import com.ihsanbal.logging.Level
+import com.ihsanbal.logging.LoggingInterceptor
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
+import okhttp3.internal.platform.Platform
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -11,9 +13,15 @@ class ApiClient {
     companion object {
         private fun buildClient(): OkHttpClient {
             return OkHttpClient.Builder()
-                .addInterceptor(HttpLoggingInterceptor().apply {
-                    this.level = HttpLoggingInterceptor.Level.BODY
-                }).addInterceptor { chain ->
+                .addInterceptor(
+                    LoggingInterceptor.Builder()
+                        .setLevel(Level.BASIC)
+                        .log(Platform.INFO)
+                        .request("Request")
+                        .response("Response")
+                        .build()
+
+                ).addInterceptor { chain ->
                     val request = chain.request().newBuilder().build()
                     chain.proceed(request)
                 }.build()
