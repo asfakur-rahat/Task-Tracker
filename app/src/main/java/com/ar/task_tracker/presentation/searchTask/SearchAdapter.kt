@@ -1,4 +1,4 @@
-package com.ar.task_tracker.presentation.taskList
+package com.ar.task_tracker.presentation.searchTask
 
 import android.graphics.Color
 import android.view.LayoutInflater
@@ -14,9 +14,9 @@ import com.ar.task_tracker.R
 import com.ar.task_tracker.databinding.TaskItemBinding
 import com.ar.task_tracker.domain.model.Task
 
-class TaskListAdapter(
+class SearchAdapter(
     private val onTaskClicked: (Task) -> Unit
-): ListAdapter<Task, TaskListAdapter.TaskViewHolder>(TaskDiffUtil) {
+): ListAdapter<Task, SearchAdapter.TaskViewHolder>(TaskDiffUtil) {
     class TaskViewHolder(
         private val binding: TaskItemBinding,
         private val onTaskClicked: (Task) -> Unit

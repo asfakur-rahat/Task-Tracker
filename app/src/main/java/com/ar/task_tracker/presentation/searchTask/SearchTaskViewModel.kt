@@ -1,4 +1,4 @@
-package com.ar.task_tracker.presentation.taskDetails
+package com.ar.task_tracker.presentation.searchTask
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,24 +9,28 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+
 @HiltViewModel
-class TaskDetailsViewModel @Inject constructor(
+class SearchTaskViewModel @Inject constructor(
     private val repository: ListRepository
 ) : ViewModel() {
-    var deleted = MutableLiveData(false)
-        private set
 
     var loader = MutableLiveData(false)
         private set
+    var taskList = MutableLiveData<List<Task>>()
+        private set
 
-    fun deleteTask(taskID: Int, task: Task) = viewModelScope.launch {
+    fun searchTask(query: String) = viewModelScope.launch {
         loader.value = true
-        deleted.value = false
-        repository.deleteTaskFromDB(taskID)
-        repository.deleteTaskFromCloud(taskID,task)
+        val response = repository.searchTasks(query)
+        taskList.value = response
         loader.value = false
-        deleted.value = true
     }
 
+    fun markTaskAsDone(task: Task, query: String?) = viewModelScope.launch {
+        val taskList = mutableListOf(task)
+        repository.insertTasks(taskList)
+        searchTask(query!!)
+    }
 
 }

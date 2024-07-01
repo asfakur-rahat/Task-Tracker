@@ -13,13 +13,13 @@ import javax.inject.Inject
 class AddTaskViewModel @Inject constructor(
     private val repository: ListRepository
 ) : ViewModel() {
-    var cloudDone = MutableLiveData<Boolean>(false)
+    var cloudDone = MutableLiveData(false)
         private set
-    var availableID = MutableLiveData<Int>(0)
+    var availableID = MutableLiveData(0)
         private set
-    var allDone = MutableLiveData<Boolean>(false)
+    var allDone = MutableLiveData(false)
         private set
-    var loader = MutableLiveData<Boolean>(false)
+    var loader = MutableLiveData(false)
         private set
 
     fun currentTaskCount() = viewModelScope.launch {

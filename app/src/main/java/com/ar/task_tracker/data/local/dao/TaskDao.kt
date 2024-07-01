@@ -15,6 +15,9 @@ interface TaskDao {
     @Query("SELECT * FROM tasks")
     suspend fun getTasks(): List<Task>
 
+    @Query("SELECT * FROM tasks WHERE title LIKE '%'|| :title ||'%' OR description LIKE '%'|| :title ||'%'")
+    suspend fun getTaskByTitleOrDescription(title: String): List<Task>
+
     @Query("DELETE FROM tasks WHERE id = :taskID")
     suspend fun deleteTask(taskID: Int)
 }

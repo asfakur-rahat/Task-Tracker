@@ -61,11 +61,9 @@ constructor(
             }
         }
     fun markTaskAsDone(task: Task) = viewModelScope.launch {
-        println(task)
-        val taskList = mutableListOf<Task>(task)
+        val taskList = mutableListOf(task)
         repository.insertTasks(taskList)
         val updatedList = repository.getTasksFromDb()
-        println(updatedList)
         this@TaskListViewModel.taskList.value = updatedList
     }
 

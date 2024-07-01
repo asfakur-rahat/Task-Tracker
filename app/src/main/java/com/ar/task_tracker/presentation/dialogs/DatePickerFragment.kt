@@ -3,13 +3,20 @@ package com.ar.task_tracker.presentation.dialogs
 import android.app.DatePickerDialog
 import android.app.Dialog
 import android.os.Bundle
-import android.widget.DatePicker
 import androidx.fragment.app.DialogFragment
 import java.util.Calendar
 
-class DatePickerFragment(
-    private val onSet : (Int, Int, Int) -> Unit
-) : DialogFragment(), DatePickerDialog.OnDateSetListener {
+class DatePickerFragment : DialogFragment() {
+
+    private var listener: DatePickerListener? = null
+
+    companion object {
+        fun newInstance(listener: DatePickerListener): DatePickerFragment {
+            val fragment = DatePickerFragment()
+            fragment.listener = listener
+            return fragment
+        }
+    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val c = Calendar.getInstance()
@@ -17,12 +24,11 @@ class DatePickerFragment(
         val month = c.get(Calendar.MONTH)
         val day = c.get(Calendar.DAY_OF_MONTH)
 
-        val datePicker =  DatePickerDialog(requireContext(), this, year, month, day)
+        val datePicker =  DatePickerDialog(requireContext(), { _, selectedYear, selectedMonth, dayOfMonth ->
+            listener?.onDateSet(selectedYear, selectedMonth+1, dayOfMonth)
+        }, year, month, day)
+
         datePicker.datePicker.minDate = c.timeInMillis
         return datePicker
-    }
-
-    override fun onDateSet(view: DatePicker, year: Int, month: Int, day: Int) {
-        onSet(year,month,day)
     }
 }

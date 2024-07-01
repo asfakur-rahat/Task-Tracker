@@ -26,6 +26,7 @@
             app:title="Add New Task"
             app:menu="@menu/edit_menu"
             app:navigationIcon="@drawable/ic_back"
+            app:navigationIconTint="@color/md_theme_onSecondaryContainer"
             app:titleCentered="true"
             app:titleTextColor="@color/md_theme_onSecondaryContainer"/>
     </com.google.android.material.appbar.AppBarLayout>
@@ -115,6 +116,7 @@
                 style="@style/TextAppearance.AppCompat.Title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:minHeight="48dp"
                 android:layout_marginTop="24dp"
                 android:textSize="16sp"
                 android:text="@string/start_time"
@@ -126,10 +128,10 @@
                 style="@style/TextAppearance.AppCompat.Title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:minHeight="48dp"
                 android:layout_marginStart="16dp"
                 android:inputType="datetime"
                 android:text="@string/start_time_date"
-                android:textColor="#42E925"
                 android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="@+id/tv_start_time_tag"
                 app:layout_constraintStart_toEndOf="@id/tv_start_time_tag"
@@ -140,7 +142,8 @@
                 style="@style/TextAppearance.AppCompat.Title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="36dp"
+                android:layout_marginVertical="8dp"
+                android:minHeight="48dp"
                 android:text="@string/deadline_tag"
                 android:textSize="16sp"
                 app:layout_constraintStart_toEndOf="@id/start"
@@ -152,9 +155,9 @@
                 style="@style/TextAppearance.AppCompat.Title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:minHeight="48dp"
                 android:layout_marginStart="16dp"
                 android:text="@string/deadline_time_date"
-                android:textColor="#42E925"
                 android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="@+id/tv_deadline_tag"
                 app:layout_constraintStart_toEndOf="@id/tv_deadline_tag"
@@ -187,7 +190,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:indeterminate="true"
-        app:indicatorColor="?colorPrimaryContainer"
+        app:indicatorColor="@color/md_theme_primaryContainer"
         android:visibility="gone"/>
 
 

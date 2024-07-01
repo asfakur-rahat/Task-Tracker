@@ -19,6 +19,9 @@
         <action
             android:id="@+id/action_taskListFragment_to_editTaskFragment"
             app:destination="@id/editTaskFragment" />
+        <action
+            android:id="@+id/action_taskListFragment_to_searchTaskFragment"
+            app:destination="@id/searchTaskFragment" />
     </fragment>
     <fragment
         android:id="@+id/taskDetailsFragment"
@@ -40,5 +43,17 @@
         <argument
             android:name="task"
             app:argType="com.ar.task_tracker.domain.model.Task" />
+    </fragment>
+    <fragment
+        android:id="@+id/searchTaskFragment"
+        android:name="com.ar.task_tracker.presentation.searchTask.SearchTaskFragment"
+        android:label="fragment_search_task"
+        tools:layout="@layout/fragment_search_task" >
+        <action
+            android:id="@+id/action_searchTaskFragment_to_editTaskFragment"
+            app:destination="@id/editTaskFragment" />
+        <action
+            android:id="@+id/action_searchTaskFragment_to_taskDetailsFragment"
+            app:destination="@id/taskDetailsFragment" />
     </fragment>
 </navigation>

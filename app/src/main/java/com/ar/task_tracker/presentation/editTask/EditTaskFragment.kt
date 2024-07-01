@@ -21,16 +21,19 @@ import com.ar.task_tracker.R
 import com.ar.task_tracker.databinding.FragmentEditTaskBinding
 import com.ar.task_tracker.domain.model.Task
 import com.ar.task_tracker.presentation.dialogs.DatePickerFragment
+import com.ar.task_tracker.presentation.dialogs.DatePickerListener
 import com.ar.task_tracker.presentation.dialogs.TimePickerFragment
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.Locale
 
 @AndroidEntryPoint
-class EditTaskFragment : Fragment(R.layout.fragment_edit_task) {
+class EditTaskFragment : Fragment(R.layout.fragment_edit_task), DatePickerListener {
 
     private lateinit var binding: FragmentEditTaskBinding
     private lateinit var pickMedia: ActivityResultLauncher<PickVisualMediaRequest>
     private val viewModel: EditTaskViewModel by viewModels()
     private var imageuri: String? = null
+    private var imageURL: String? = null
     private val args: EditTaskFragmentArgs by navArgs()
     private var status = false
 
@@ -79,7 +82,7 @@ class EditTaskFragment : Fragment(R.layout.fragment_edit_task) {
         status = args.task.status
         val initialStatus = if (args.task.status) "Completed" else "Pending"
         autoCompleteTextView?.setText(initialStatus, false)
-        autoCompleteTextView?.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
+        autoCompleteTextView?.onItemClickListener = AdapterView.OnItemClickListener { parent, _, position, _ ->
             val selectedStatus = parent.getItemAtPosition(position).toString()
             status = selectedStatus == "Completed"
         }
@@ -119,7 +122,7 @@ class EditTaskFragment : Fragment(R.layout.fragment_edit_task) {
                 showError()
             }
         }else{
-            saveTask(args.task.copy(
+            updateTask(args.task.copy(
                     title = title,
                     description = description,
                     deadline = binding.tvDeadline.text.toString().trimMargin(),
@@ -129,8 +132,8 @@ class EditTaskFragment : Fragment(R.layout.fragment_edit_task) {
     }
 
     //Save task to the Cloud
-    private fun saveTask(task: Task) {
-        viewModel.saveTaskToCloud(task,imageuri)
+    private fun updateTask(task: Task) {
+        viewModel.updateTaskToCloud(task,imageuri, imageURL)
     }
 
     // Error for empty title and description
@@ -164,18 +167,21 @@ class EditTaskFragment : Fragment(R.layout.fragment_edit_task) {
     }
     // Open Date Time picker dialog for user
     private fun openDialog() {
-        var deadline = ""
-        val newFragment = DatePickerFragment { yy, mm, dd ->
-            val MM = String.format("%02d", mm)
-            deadline = "$deadline$dd/$MM/$yy"
-            val timeFragment = TimePickerFragment(selectedYear = yy, selectedMonth = mm, selectedDay = dd, onSet = { hour, min ->
-                val minute = String.format("%02d", min)
-                deadline = "$deadline - $hour : $minute"
-                binding.tvDeadline.text = deadline
-            })
-            timeFragment.show(requireActivity().supportFragmentManager, "timePicker")
-        }
-        newFragment.show(requireActivity().supportFragmentManager, "datePicker")
+        val datePicker = DatePickerFragment.newInstance(this)
+        datePicker.show(childFragmentManager, "DatePicker")
+    }
+
+    // on Date set
+    override fun onDateSet(year: Int, month: Int, day: Int){
+        var deadLine = ""
+        val formatedMonth = String.format(Locale.UK,"%02d", month)
+        deadLine = "$deadLine$day/$formatedMonth/$year"
+        val timeFragment = TimePickerFragment(selectedYear = year, selectedMonth = month, selectedDay = day, onSet = { hour, min ->
+            val minute = String.format(Locale.UK,"%02d", min)
+            deadLine = "$deadLine - $hour : $minute"
+            binding.tvDeadline.text = deadLine
+        })
+        timeFragment.show(requireActivity().supportFragmentManager, "timePicker")
     }
 
     // Observer for LiveData
@@ -192,6 +198,11 @@ class EditTaskFragment : Fragment(R.layout.fragment_edit_task) {
                         status = status
                     )
                 )
+            }
+        }
+        viewModel.currentImage.observe(viewLifecycleOwner){
+            if(it != null){
+                imageURL = it
             }
         }
         viewModel.allDone.observe(viewLifecycleOwner){
@@ -217,4 +228,6 @@ class EditTaskFragment : Fragment(R.layout.fragment_edit_task) {
         binding.progressBar.visibility = View.GONE
         binding.mainView.visibility = View.VISIBLE
     }
+
+
 }

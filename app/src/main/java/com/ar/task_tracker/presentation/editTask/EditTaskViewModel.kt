@@ -13,12 +13,13 @@ import javax.inject.Inject
 class EditTaskViewModel @Inject constructor(
     private val repository: ListRepository
 ): ViewModel(){
-    var cloudDone = MutableLiveData<Boolean>(false)
+    var cloudDone = MutableLiveData(false)
         private set
-    var allDone = MutableLiveData<Boolean>(false)
+    var allDone = MutableLiveData(false)
         private set
-
-    var loader = MutableLiveData<Boolean>(false)
+    var loader = MutableLiveData(false)
+        private set
+    var currentImage = MutableLiveData<String?>(null)
         private set
 
 
@@ -38,6 +39,7 @@ class EditTaskViewModel @Inject constructor(
             val response = repository.getTaskFromCloud()
             for(item in response){
                 if(item.id == taskID){
+                    currentImage.value = item.image
                     taskList.add(
                         task.copy(
                             image = item.image
@@ -50,14 +52,17 @@ class EditTaskViewModel @Inject constructor(
 
     }
 
-    fun saveTaskToCloud(task: Task, imageUri: String?) = viewModelScope.launch {
+    fun updateTaskToCloud(task: Task, imageUri: String?, imageURL: String?) = viewModelScope.launch {
         loader.value = true
-        val newTask = if (imageUri == null){
-            task.copy(image = null)
+        if (imageUri == null && imageURL == null){
+            cloudDone.value = true
+        }else if (imageUri == null){
+            cloudDone.value = true
         }else{
-            task.copy(image = imageUri)
+            val newTask = task.copy(image = imageUri)
+            val response = repository.saveTaskDetailsInCloud(newTask)
+            cloudDone.value = response
         }
-        val response = repository.saveTaskDetailsInCloud(newTask)
-        cloudDone.value = response
+
     }
 }
