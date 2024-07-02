@@ -59,6 +59,9 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
+    // Splash Screen API
+    implementation("androidx.core:core-splashscreen:1.0.1")
+
     //Retrofit
     implementation(libs.retrofit)
     implementation(libs.gson)
@@ -83,6 +86,10 @@ dependencies {
     implementation("com.google.android.material:material:1.3.0")
 
     implementation(platform("com.google.firebase:firebase-bom:33.1.1"))
+
+    implementation("com.github.ihsanbal:LoggingInterceptor:3.1.0") {
+        exclude(group = "org.json", module = "json")
+    }
 }
 
 kapt {

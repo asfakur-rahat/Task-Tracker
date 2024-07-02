@@ -3,11 +3,18 @@ package com.ar.task_tracker.presentation.taskList
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.widget.SearchView
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -38,24 +45,46 @@ class TaskListFragment : Fragment(), ModalBottomSheetListener {
         savedInstanceState: Bundle?,
     ): View? = inflater.inflate(R.layout.fragment_task_list, container, false)
 
-    override fun onViewCreated(
-        view: View,
-        savedInstanceState: Bundle?,
-    ) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding = FragmentTaskListBinding.bind(view)
-        adapter =
-            TaskListAdapter {
-                if (saveClickCounter++ == 0) {
-                    showOptions(it)
-                    viewModel.viewModelScope.launch {
-                        delay(500)
-                        saveClickCounter = 0
-                    }
+
+        adapter = TaskListAdapter {
+            if (saveClickCounter++ == 0) {
+                showOptions(it)
+                viewModel.viewModelScope.launch {
+                    delay(500)
+                    saveClickCounter = 0
                 }
             }
-        super.onViewCreated(view, savedInstanceState)
+        }
+        setSearchListener()
         initListener()
         initObserver()
+    }
+
+
+
+    private fun setSearchListener() {
+        val searchItem = binding.topAppBar.menu.findItem(R.id.search)
+        val searchView = searchItem.actionView as SearchView
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                println("Submit")
+                query?.let {
+                    viewModel.searchTask(it)
+                }
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                if(newText.isNullOrEmpty()){
+                    viewModel.searchTask("")
+                }
+                return true
+            }
+        })
     }
 
     override fun onResume() {
@@ -68,14 +97,6 @@ class TaskListFragment : Fragment(), ModalBottomSheetListener {
         binding.addTaskBtn.setOnClickListener {
             gotoAddTask()
         }
-        binding.topAppBar.setOnMenuItemClickListener { item ->
-            when (item.itemId) {
-                R.id.search -> {
-                    gotoSearch()
-                }
-            }
-            true
-        }
     }
 
     private fun gotoAddTask() {
@@ -83,7 +104,7 @@ class TaskListFragment : Fragment(), ModalBottomSheetListener {
     }
 
     private fun gotoSearch() {
-        findNavController().navigate(TaskListFragmentDirections.actionTaskListFragmentToSearchTaskFragment())
+        binding.topAppBar.collapseActionView()
     }
 
     // LiveDataObserver
@@ -124,9 +145,7 @@ class TaskListFragment : Fragment(), ModalBottomSheetListener {
 
     private fun completeTask(task: Task) {
         if (task.status) {
-            Toast
-                .makeText(requireContext(), "The task is already completed", Toast.LENGTH_SHORT)
-                .show()
+            Toast.makeText(requireContext(), "The task is already completed", Toast.LENGTH_SHORT).show()
         } else {
             saveTask(requireContext(), task.copy(status = true))
             viewModel.markTaskAsDone(task.copy(status = true))
@@ -136,18 +155,14 @@ class TaskListFragment : Fragment(), ModalBottomSheetListener {
     // Navigation to Details Page
     private fun gotoDetails(task: Task) {
         findNavController().navigate(
-            TaskListFragmentDirections.actionTaskListFragmentToTaskDetailsFragment(
-                task,
-            ),
+            TaskListFragmentDirections.actionTaskListFragmentToTaskDetailsFragment(task)
         )
     }
 
     // Navigation to Edit page
     private fun gotoEdit(task: Task) {
         findNavController().navigate(
-            TaskListFragmentDirections.actionTaskListFragmentToEditTaskFragment(
-                task,
-            ),
+            TaskListFragmentDirections.actionTaskListFragmentToEditTaskFragment(task)
         )
     }
 
