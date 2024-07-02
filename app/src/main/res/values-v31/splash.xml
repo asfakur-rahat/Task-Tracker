@@ -3,7 +3,7 @@
     <style name="Theme.TaskTracker.SplashScreen" parent="Theme.SplashScreen">
         <item name="android:windowSplashScreenBackground">@color/md_theme_background</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/avd_task_logo</item>
-        <item name="windowSplashScreenAnimationDuration">1200</item>
+        <item name="windowSplashScreenAnimationDuration">2500</item>
         <item name="postSplashScreenTheme">@style/AppTheme</item>
     </style>
 </resources>

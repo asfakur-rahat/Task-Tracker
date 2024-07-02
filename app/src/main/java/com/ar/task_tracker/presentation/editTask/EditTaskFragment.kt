@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
@@ -20,14 +21,20 @@ import coil.size.ViewSizeResolver
 import com.ar.task_tracker.R
 import com.ar.task_tracker.databinding.FragmentEditTaskBinding
 import com.ar.task_tracker.domain.model.Task
-import com.ar.task_tracker.presentation.dialogs.DatePickerFragment
-import com.ar.task_tracker.presentation.dialogs.DatePickerListener
-import com.ar.task_tracker.presentation.dialogs.TimePickerFragment
+import com.google.android.material.datepicker.CalendarConstraints
+import com.google.android.material.datepicker.DateValidatorPointForward
+import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.timepicker.MaterialTimePicker
 import dagger.hilt.android.AndroidEntryPoint
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
 import java.util.Locale
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.seconds
 
 @AndroidEntryPoint
-class EditTaskFragment : Fragment(R.layout.fragment_edit_task), DatePickerListener {
+class EditTaskFragment : Fragment(R.layout.fragment_edit_task){
 
     private lateinit var binding: FragmentEditTaskBinding
     private lateinit var pickMedia: ActivityResultLauncher<PickVisualMediaRequest>
@@ -165,23 +172,61 @@ class EditTaskFragment : Fragment(R.layout.fragment_edit_task), DatePickerListen
         imageuri = uri.toString()
         binding.ivTaskImage.setImageURI(uri)
     }
+
     // Open Date Time picker dialog for user
     private fun openDialog() {
-        val datePicker = DatePickerFragment.newInstance(this)
-        datePicker.show(childFragmentManager, "DatePicker")
+
+        val constraintsBuilder = CalendarConstraints.Builder()
+                .setValidator(DateValidatorPointForward.now())
+        val datePicker = MaterialDatePicker.Builder.datePicker().setTitleText("Select Deadline Date").setSelection(MaterialDatePicker.todayInUtcMilliseconds()).setCalendarConstraints(constraintsBuilder.build())
+            .build()
+
+        datePicker.addOnPositiveButtonClickListener {
+            showTimePicker(it)
+        }
+        datePicker.show(requireActivity().supportFragmentManager, "datePicker")
     }
 
-    // on Date set
-    override fun onDateSet(year: Int, month: Int, day: Int){
-        var deadLine = ""
-        val formatedMonth = String.format(Locale.UK,"%02d", month+1)
-        deadLine = "$deadLine$day/$formatedMonth/$year"
-        val timeFragment = TimePickerFragment(selectedYear = year, selectedMonth = month, selectedDay = day, onSet = { hour, min ->
-            val minute = String.format(Locale.UK,"%02d", min)
-            deadLine = "$deadLine - $hour : $minute"
-            binding.tvDeadline.text = deadLine
-        })
-        timeFragment.show(requireActivity().supportFragmentManager, "timePicker")
+    private fun showTimePicker(selectedDate: Long) {
+        val calendar = Calendar.getInstance()
+        val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
+        val currentMinute = calendar.get(Calendar.MINUTE)
+
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val formattedDate = dateFormat.format(selectedDate)
+
+        val timePicker = MaterialTimePicker.Builder().setTitleText("Select Deadline Time").setHour(currentHour).setMinute(currentMinute).setInputMode(MaterialTimePicker.INPUT_MODE_KEYBOARD)
+            .build()
+        timePicker.addOnPositiveButtonClickListener {
+            val selectedHour = timePicker.hour
+            val selectedMinute = timePicker.minute
+
+            val selectedDateTime = Calendar.getInstance().apply {
+                timeInMillis = selectedDate
+                set(Calendar.HOUR_OF_DAY, selectedHour)
+                set(Calendar.MINUTE, selectedMinute)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
+
+            val now = Calendar.getInstance().apply {
+                timeInMillis = MaterialDatePicker.todayInUtcMilliseconds()
+                set(Calendar.HOUR_OF_DAY, calendar.get(Calendar.HOUR_OF_DAY))
+                set(Calendar.MINUTE, calendar.get(Calendar.MINUTE))
+                set(Calendar.SECOND, calendar.get(Calendar.SECOND))
+                set(Calendar.MILLISECOND, calendar.get(Calendar.MILLISECOND))
+            }
+
+            if (selectedDateTime.before(now)) {
+                Toast.makeText(requireContext(), "Cannot select past time", Toast.LENGTH_SHORT).show()
+                showTimePicker(selectedDate)
+            } else {
+                val selectedTime = String.format(Locale.getDefault(), "%02d:%02d", selectedHour, selectedMinute)
+                val dateTime = "$formattedDate - $selectedTime"
+                binding.tvDeadline.text = dateTime
+            }
+        }
+        timePicker.show(requireActivity().supportFragmentManager, "TimePicker")
     }
 
     // Observer for LiveData

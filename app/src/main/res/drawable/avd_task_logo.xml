@@ -29,7 +29,7 @@
         <aapt:attr name="android:animation">
             <objectAnimator
                 android:propertyName="translateY"
-                android:startOffset="200"
+                android:startOffset="100"
                 android:duration="1000"
                 android:valueFrom="-500"
                 android:valueTo="0"
@@ -41,7 +41,7 @@
         <aapt:attr name="android:animation">
             <objectAnimator
                 android:propertyName="translateX"
-                android:startOffset="200"
+                android:startOffset="100"
                 android:duration="1000"
                 android:valueFrom="-500"
                 android:valueTo="0"
