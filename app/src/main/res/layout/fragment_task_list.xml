@@ -23,9 +23,9 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:title="Task List"
-            app:menu="@menu/search_menu"
             app:titleCentered="true"
-            app:titleTextColor="@color/md_theme_onSecondaryContainer"/>
+            app:titleTextColor="@color/md_theme_onSecondaryContainer"
+            app:menu="@menu/search_menu"/>
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView

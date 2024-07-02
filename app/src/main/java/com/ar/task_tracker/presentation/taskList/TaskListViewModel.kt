@@ -60,6 +60,13 @@ constructor(
                 }
             }
         }
+    fun searchTask(query: String) = viewModelScope.launch {
+        isLoading.value = true
+        val response = repository.searchTasks(query)
+        taskList.value = response
+        isLoading.value = false
+    }
+
     fun markTaskAsDone(task: Task) = viewModelScope.launch {
         val taskList = mutableListOf(task)
         repository.insertTasks(taskList)
