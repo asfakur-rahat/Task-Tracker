@@ -3,18 +3,12 @@ package com.ar.task_tracker.presentation.taskList
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
-import androidx.core.view.MenuHost
-import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -103,9 +97,9 @@ class TaskListFragment : Fragment(), ModalBottomSheetListener {
         findNavController().navigate(TaskListFragmentDirections.actionTaskListFragmentToAddTaskFragment())
     }
 
-    private fun gotoSearch() {
-        binding.topAppBar.collapseActionView()
-    }
+//    private fun gotoSearch() {
+//        binding.topAppBar.collapseActionView()
+//    }
 
     // LiveDataObserver
     private fun initObserver() {
