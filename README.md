@@ -33,6 +33,9 @@ and also you can mark the task as done if you want.
 - **Task List Screen** \
   <img src="images/tasklist-light.jpg" alt="Tasklist" width="25%"/>
   <img src="images/tasklist-dark.jpg" alt="Tasklist" width="25%"/>
+- **Search Task on Task List Screen** \
+    <img src="images/searchtask-light.jpg" alt="Search Task" width="25%"/>
+    <img src="images/searchtask-dark.jpg" alt="Search Task" width="25%"/>
 - **Add New Task Screen** \
   <img src="images/addtask-light.jpg" alt="Add Task" width="25%"/>
   <img src="images/addtask-dark.jpg" alt="Add Task" width="25%"/>
@@ -46,7 +49,7 @@ and also you can mark the task as done if you want.
   <img src="images/options-light.jpg" alt="Bottom Sheet Dialog" width="25%"/>
   <img src="images/options-dark.jpg" alt="Bottom Sheet Dialog" width="25%"/>
 
-### Sample Video demontration of app functionality:
+### Sample Video demonstration of app functionality:
 
   <img src="images/appdemo.gif" alt="Bottom Sheet Dialog" width="25%"/>
 
