@@ -174,7 +174,7 @@ class EditTaskFragment : Fragment(R.layout.fragment_edit_task), DatePickerListen
     // on Date set
     override fun onDateSet(year: Int, month: Int, day: Int){
         var deadLine = ""
-        val formatedMonth = String.format(Locale.UK,"%02d", month)
+        val formatedMonth = String.format(Locale.UK,"%02d", month+1)
         deadLine = "$deadLine$day/$formatedMonth/$year"
         val timeFragment = TimePickerFragment(selectedYear = year, selectedMonth = month, selectedDay = day, onSet = { hour, min ->
             val minute = String.format(Locale.UK,"%02d", min)

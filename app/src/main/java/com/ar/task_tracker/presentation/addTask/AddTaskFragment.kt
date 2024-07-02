@@ -204,7 +204,7 @@ class AddTaskFragment : Fragment(R.layout.fragment_add_task), DatePickerListener
 
     override fun onDateSet(year: Int, month: Int, day: Int) {
         var dateTime = ""
-        val formatedMonth = String.format(Locale.UK,"%02d", month)
+        val formatedMonth = String.format(Locale.UK,"%02d", month+1)
         dateTime = "$dateTime$day/$formatedMonth/$year"
         val timeFragment = TimePickerFragment(selectedYear = year, selectedMonth = month, selectedDay = day, onSet = { hour, min ->
             val minute = String.format(Locale.UK,"%02d", min)

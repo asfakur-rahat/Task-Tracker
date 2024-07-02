@@ -25,7 +25,7 @@ class DatePickerFragment : DialogFragment() {
         val day = c.get(Calendar.DAY_OF_MONTH)
 
         val datePicker =  DatePickerDialog(requireContext(), { _, selectedYear, selectedMonth, dayOfMonth ->
-            listener?.onDateSet(selectedYear, selectedMonth+1, dayOfMonth)
+            listener?.onDateSet(selectedYear, selectedMonth, dayOfMonth)
         }, year, month, day)
 
         datePicker.datePicker.minDate = c.timeInMillis
