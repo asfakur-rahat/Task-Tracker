@@ -21,4 +21,10 @@
     <string name="search_task">Search Task</string>
     <string name="no_task_found">No Task Found !!</string>
     <string name="search_hint">Search Task by title or description</string>
+    <string name="rotate_camera">rotate</string>
+    <string name="take_photo">capture</string>
+    <string name="retake">retake</string>
+    <string name="confirm">confirm</string>
+    <string name="from_camera">Take a Picture</string>
+    <string name="from_gallery">Select from Gallery</string>
 </resources>

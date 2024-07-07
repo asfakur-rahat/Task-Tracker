@@ -1,9 +1,18 @@
 package com.ar.task_tracker.presentation.addTask
 
+import android.Manifest.permission.CAMERA
+import android.Manifest.permission.READ_EXTERNAL_STORAGE
+import android.Manifest.permission.READ_MEDIA_IMAGES
+import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.annotation.SuppressLint
+import android.content.ContentValues
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
+import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.View
@@ -11,12 +20,18 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.ar.task_tracker.R
 import com.ar.task_tracker.databinding.FragmentAddTaskBinding
 import com.ar.task_tracker.domain.model.Task
+import com.ar.task_tracker.presentation.addTask.dialog.BottomSheet
+import com.ar.task_tracker.presentation.addTask.dialog.SheetListener
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
@@ -27,15 +42,27 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
+import androidx.camera.lifecycle.ProcessCameraProvider
+
 
 @AndroidEntryPoint
-class AddTaskFragment : Fragment(R.layout.fragment_add_task){
+class AddTaskFragment : Fragment(R.layout.fragment_add_task), SheetListener{
 
     private lateinit var binding: FragmentAddTaskBinding
     private lateinit var pickMedia: ActivityResultLauncher<PickVisualMediaRequest>
     private val viewModel: AddTaskViewModel by viewModels()
     private var imageuri: String? = null
     private var taskId: Int = 0
+
+
+
+    private var imageCapture: ImageCapture? = null
+    private lateinit var executor: ExecutorService
+    private var isUsingBackCamera = true
+    private lateinit var cameraProvider: ProcessCameraProvider
+    private var savedImageUri: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,6 +73,14 @@ class AddTaskFragment : Fragment(R.layout.fragment_add_task){
                 handleImage(uri)
             }
         }
+
+        if(!allPermissionsGranted()){
+            activityResultLauncher.launch(REQUIRED_PERMISSIONS)
+        }
+
+
+
+        executor = Executors.newSingleThreadExecutor()
     }
 
     // Picked image handler
@@ -54,6 +89,8 @@ class AddTaskFragment : Fragment(R.layout.fragment_add_task){
         Log.d("URI is after getting image", uri.toString())
         binding.ivTaskImage.setImageURI(uri)
     }
+
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding = FragmentAddTaskBinding.bind(view)
@@ -188,7 +225,7 @@ class AddTaskFragment : Fragment(R.layout.fragment_add_task){
     // Action listener
     private fun initListener() {
         binding.ivTaskImage.setOnClickListener {
-            pickImage()
+            showOptions()
         }
         binding.tvStartTime.setOnClickListener {
             tag = "start"
@@ -201,6 +238,26 @@ class AddTaskFragment : Fragment(R.layout.fragment_add_task){
         binding.topAppBar.setNavigationOnClickListener {
             goBack()
         }
+
+        binding.btnRetake.setOnClickListener {
+            retakePhoto()
+        }
+        binding.btnConfirm.setOnClickListener {
+            confirmPhoto()
+        }
+
+        binding.camRotate.setOnClickListener {
+            toggleCamera()
+        }
+        binding.camButton.setOnClickListener {
+            takePhoto()
+        }
+    }
+
+    private fun showOptions() {
+        val bottomSheet = BottomSheet.newInstance()
+        bottomSheet.setTargetFragment(this, 0)
+        bottomSheet.show(parentFragmentManager, BottomSheet.TAG)
     }
 
     private fun openDialog() {
@@ -281,6 +338,162 @@ class AddTaskFragment : Fragment(R.layout.fragment_add_task){
     // Image Picker Dialog for pick image
     private fun pickImage() {
         pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+    }
+
+    override fun onCamera() {
+        if(!allPermissionsGranted()){
+            requestPermissions()
+        }else{
+            binding.mainView.visibility = View.GONE
+            binding.captureLayout.visibility = View.VISIBLE
+            startCamera()
+        }
+    }
+
+    override fun onGallery() {
+        pickImage()
+    }
+
+    private fun toggleCamera() {
+        isUsingBackCamera = !isUsingBackCamera
+        bindCameraUseCase()
+    }
+    private fun bindCameraUseCase() {
+        val cameraSelector = if (isUsingBackCamera) {
+            CameraSelector.DEFAULT_BACK_CAMERA
+        } else {
+            CameraSelector.DEFAULT_FRONT_CAMERA
+        }
+
+        val preview = androidx.camera.core.Preview.Builder()
+            .build()
+            .also {
+                it.setSurfaceProvider(binding.camPreview.surfaceProvider)
+            }
+        imageCapture = ImageCapture.Builder().build()
+
+        try {
+            cameraProvider.unbindAll()
+            cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture)
+        } catch (e: Exception) {
+            Log.e(TAG, "Use case binding failed", e)
+        }
+    }
+    private fun requestPermissions() {
+        activityResultLauncher.launch(REQUIRED_PERMISSIONS)
+    }
+    private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
+        ContextCompat.checkSelfPermission(requireActivity().baseContext, it) == PackageManager.PERMISSION_GRANTED
+    }
+    private val activityResultLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+        var permissionGranted = true
+        permissions.entries.forEach {
+            if (it.key in REQUIRED_PERMISSIONS && !it.value)
+                permissionGranted = false
+        }
+        if (!permissionGranted) {
+            Toast.makeText(requireActivity().baseContext, "Permission request denied", Toast.LENGTH_SHORT).show()
+        } else {
+            startCamera()
+        }
+    }
+
+
+
+    private fun retakePhoto() {
+        savedImageUri?.let { uri ->
+            requireActivity().contentResolver.delete(uri, null, null)
+            savedImageUri = null
+        }
+        startCamera()
+        binding.previewLayout.visibility = View.GONE
+        binding.captureLayout.visibility = View.VISIBLE
+    }
+    private fun confirmPhoto() {
+        Toast.makeText(requireContext(), "Photo saved: $savedImageUri", Toast.LENGTH_SHORT).show()
+        stopCameraPreview()
+        if (savedImageUri != null) {
+            handleImage(savedImageUri!!)
+        }
+        binding.previewLayout.visibility = View.GONE
+        binding.captureLayout.visibility = View.GONE
+        binding.mainView.visibility = View.VISIBLE
+    }
+
+
+    private fun takePhoto() {
+        val imageCapture = imageCapture ?: return
+        val name = SimpleDateFormat(FILENAME_FORMAT, Locale.getDefault()).format(System.currentTimeMillis())
+
+        val contentValues = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, name)
+            put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+            put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/CameraX-Image")
+        }
+
+        val outputOptions = ImageCapture.OutputFileOptions
+            .Builder(requireActivity().contentResolver, MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+            .build()
+
+        imageCapture.takePicture(
+            outputOptions,
+            ContextCompat.getMainExecutor(requireContext().applicationContext),
+            object : ImageCapture.OnImageSavedCallback {
+                override fun onError(exc: ImageCaptureException) {
+                    Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
+                }
+
+                override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+                    savedImageUri = output.savedUri
+                    Log.d("saved override", "Photo capture succeeded: ${output.savedUri}")
+                    showImagePreview()
+                }
+            }
+        )
+    }
+    private fun showImagePreview() {
+        val uri = Uri.parse(savedImageUri.toString())
+        binding.previewLayout.visibility = View.VISIBLE
+        binding.capturedImage.setImageURI(uri)
+        stopCameraPreview()
+        binding.captureLayout.visibility = View.GONE
+        binding.mainView.visibility = View.GONE
+    }
+    private fun stopCameraPreview() {
+        try {
+            cameraProvider.unbindAll()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error stopping camera preview", e)
+        }
+    }
+
+    private fun startCamera() {
+        val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
+        cameraProviderFuture.addListener({
+            cameraProvider = cameraProviderFuture.get()
+            bindCameraUseCase()
+        }, ContextCompat.getMainExecutor(requireContext()))
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        executor.shutdown()
+    }
+    companion object {
+        private const val TAG = "CameraXApp"
+        private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
+        private val REQUIRED_PERMISSIONS = if (SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            mutableListOf(
+                CAMERA,
+                READ_MEDIA_IMAGES
+            ).toTypedArray()
+        } else {
+            mutableListOf(
+                CAMERA,
+                WRITE_EXTERNAL_STORAGE,
+                READ_EXTERNAL_STORAGE
+            ).toTypedArray()
+        }
     }
 
 }
