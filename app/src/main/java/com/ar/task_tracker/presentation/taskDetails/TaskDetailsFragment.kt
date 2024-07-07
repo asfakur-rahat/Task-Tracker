@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import coil.load
@@ -14,6 +15,8 @@ import com.ar.task_tracker.R
 import com.ar.task_tracker.databinding.FragmentTaskDetailsBinding
 import com.ar.task_tracker.domain.model.Task
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class TaskDetailsFragment : Fragment(R.layout.fragment_task_details) {
@@ -54,16 +57,20 @@ class TaskDetailsFragment : Fragment(R.layout.fragment_task_details) {
 
     //Observers for Livedata
     private fun initObserver() {
-        viewModel.deleted.observe(viewLifecycleOwner){
-            if(it == true){
-                goBack()
+        viewLifecycleOwner.lifecycleScope.launch{
+            viewModel.deleted.collectLatest {
+                if(it){
+                    goBack()
+                }
             }
         }
-        viewModel.loader.observe(viewLifecycleOwner){
-            if(it == true){
-                showLoader()
-            }else{
-                hideLoader()
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.loader.collectLatest{
+                if(it){
+                    showLoader()
+                }else{
+                    hideLoader()
+                }
             }
         }
     }
@@ -93,7 +100,7 @@ class TaskDetailsFragment : Fragment(R.layout.fragment_task_details) {
             binding.ivTaskImage.load(task.image){
                 placeholder(R.drawable.image_placeholder)
                 size(ViewSizeResolver(binding.ivTaskImage))
-                scale(Scale.FIT)
+                scale(Scale.FILL)
             }
         }
         binding.tvStartTime.text = task.startTime

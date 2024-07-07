@@ -9,6 +9,9 @@ import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,6 +25,7 @@ import com.ar.task_tracker.presentation.dialogs.getTask
 import com.ar.task_tracker.presentation.dialogs.saveTask
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -52,11 +56,19 @@ class TaskListFragment : Fragment(), ModalBottomSheetListener {
                 }
             }
         }
+        initiateList()
         setSearchListener()
         initListener()
         initObserver()
     }
 
+    private fun initiateList() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                viewModel.initList()
+            }
+        }
+    }
 
 
     private fun setSearchListener() {
@@ -81,11 +93,6 @@ class TaskListFragment : Fragment(), ModalBottomSheetListener {
         })
     }
 
-    override fun onResume() {
-        super.onResume()
-        viewModel.initList()
-    }
-
     // Listener for buttons
     private fun initListener() {
         binding.addTaskBtn.setOnClickListener {
@@ -97,20 +104,25 @@ class TaskListFragment : Fragment(), ModalBottomSheetListener {
         findNavController().navigate(TaskListFragmentDirections.actionTaskListFragmentToAddTaskFragment())
     }
 
-//    private fun gotoSearch() {
-//        binding.topAppBar.collapseActionView()
-//    }
-
     // LiveDataObserver
     private fun initObserver() {
-        viewModel.taskList.observe(viewLifecycleOwner) { taskList ->
-            initView(taskList)
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED){
+                viewModel.taskList.collectLatest {
+                    initView(it)
+                    //println(it)
+                }
+            }
         }
-        viewModel.isLoading.observe(viewLifecycleOwner) {
-            if (it) {
-                showLoader()
-            } else {
-                hideLoader()
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                viewModel.isLoading.collectLatest {
+                    if (it) {
+                        showLoader()
+                    } else {
+                        hideLoader()
+                    }
+                }
             }
         }
     }

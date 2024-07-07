@@ -192,7 +192,7 @@
 
     </androidx.core.widget.NestedScrollView>
 
-    <com.google.android.material.progressindicator.CircularProgressIndicator
+    <com.google.android.material.progressindicator.LinearProgressIndicator
         android:id="@+id/progressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -201,6 +201,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:indeterminate="true"
+        android:paddingHorizontal="64dp"
         app:indicatorColor="@color/md_theme_primaryContainer"
         android:visibility="gone"/>
 

@@ -55,6 +55,7 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.firestore.ktx)
     implementation(libs.firebase.storage.ktx)
+    implementation(libs.androidx.camera.lifecycle)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -90,6 +91,16 @@ dependencies {
     implementation("com.github.ihsanbal:LoggingInterceptor:3.1.0") {
         exclude(group = "org.json", module = "json")
     }
+
+    val camerax_version = "1.4.0-alpha04"
+    implementation("androidx.camera:camera-core:${camerax_version}")
+    implementation("androidx.camera:camera-camera2:${camerax_version}")
+    implementation("androidx.camera:camera-lifecycle:${camerax_version}")
+    implementation("androidx.camera:camera-view:${camerax_version}")
+    implementation("androidx.camera:camera-extensions:${camerax_version}")
+
+
+    implementation("com.google.guava:guava:31.1-android")
 }
 
 kapt {

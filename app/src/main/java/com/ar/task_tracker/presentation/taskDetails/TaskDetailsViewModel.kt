@@ -1,11 +1,11 @@
 package com.ar.task_tracker.presentation.taskDetails
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ar.task_tracker.domain.model.Task
 import com.ar.task_tracker.domain.repository.ListRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -13,10 +13,10 @@ import javax.inject.Inject
 class TaskDetailsViewModel @Inject constructor(
     private val repository: ListRepository
 ) : ViewModel() {
-    var deleted = MutableLiveData(false)
+    var deleted = MutableStateFlow(false)
         private set
 
-    var loader = MutableLiveData(false)
+    var loader = MutableStateFlow(false)
         private set
 
     fun deleteTask(taskID: Int, task: Task) = viewModelScope.launch {

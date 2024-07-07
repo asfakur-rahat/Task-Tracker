@@ -102,7 +102,7 @@
                 android:layout_width="250dp"
                 android:layout_height="250dp"
                 android:layout_marginTop="16dp"
-                android:scaleType="centerCrop"
+                android:scaleType="fitXY"
                 android:src="@drawable/task_example"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/start"
@@ -217,7 +217,7 @@
 
     </androidx.core.widget.NestedScrollView>
 
-    <com.google.android.material.progressindicator.CircularProgressIndicator
+    <com.google.android.material.progressindicator.LinearProgressIndicator
         android:id="@+id/progressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -226,6 +226,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:indeterminate="true"
+        android:paddingHorizontal="64dp"
         app:indicatorColor="@color/md_theme_primaryContainer"
         android:visibility="gone"/>
 
