@@ -30,7 +30,7 @@ class TaskListAdapter(
                 binding.taskImage.load(task.image){
                     placeholder(R.drawable.image_placeholder)
                     size(ViewSizeResolver(binding.taskImage))
-                    scale(Scale.FIT)
+                    scale(Scale.FILL)
                 }
             }
             binding.taskTitle.text = task.title

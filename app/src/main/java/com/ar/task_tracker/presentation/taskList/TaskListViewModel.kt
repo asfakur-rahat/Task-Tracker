@@ -7,6 +7,8 @@ import com.ar.task_tracker.domain.model.Task
 import com.ar.task_tracker.domain.repository.ListRepository
 import com.ar.task_tracker.utils.AppConstant
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -16,15 +18,16 @@ class TaskListViewModel
 constructor(
     private val repository: ListRepository,
 ) : ViewModel() {
-    var taskList = MutableLiveData<List<Task>>()
+    var taskList = MutableStateFlow<List<Task>>(listOf())
         private set
-    var isLoading = MutableLiveData<Boolean>()
+    var isLoading = MutableStateFlow(false)
         private set
 
     fun initList() =
         viewModelScope.launch {
             isLoading.value = true
             val responseFromDB = repository.getTasksFromDb()
+            delay(500)
             if (responseFromDB.isNotEmpty()) {
                 isLoading.value = false
                 this@TaskListViewModel.taskList.value = responseFromDB
@@ -63,6 +66,7 @@ constructor(
     fun searchTask(query: String) = viewModelScope.launch {
         isLoading.value = true
         val response = repository.searchTasks(query)
+        delay(500)
         taskList.value = response
         isLoading.value = false
     }

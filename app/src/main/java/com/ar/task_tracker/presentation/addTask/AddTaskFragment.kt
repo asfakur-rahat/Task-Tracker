@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.Toast
@@ -11,6 +12,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.ar.task_tracker.R
 import com.ar.task_tracker.databinding.FragmentAddTaskBinding
@@ -20,6 +22,8 @@ import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.timepicker.MaterialTimePicker
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -47,6 +51,7 @@ class AddTaskFragment : Fragment(R.layout.fragment_add_task){
     // Picked image handler
     private fun handleImage(uri: Uri) {
         imageuri = uri.toString()
+        Log.d("URI is after getting image", uri.toString())
         binding.ivTaskImage.setImageURI(uri)
     }
 
@@ -60,41 +65,55 @@ class AddTaskFragment : Fragment(R.layout.fragment_add_task){
 
     // LiveData observer
     private fun initObserver() {
-        viewModel.availableID.observe(viewLifecycleOwner) {
-            taskId = it
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.availableID.collectLatest{
+                taskId = it
+            }
         }
-        viewModel.cloudDone.observe(viewLifecycleOwner) {
-            //println(it)
-            if(it == true){
-                viewModel.fetchTaskFromCloud(
-                    taskId,
-                    Task(
-                        id = taskId,
-                        title = binding.tvTaskTitle.text.toString().trimMargin(),
-                        description = binding.tvTaskDescription.text.toString().trimMargin(),
-                        image = imageuri,
-                        startTime = binding.tvStartTime.text.toString().trimMargin(),
-                        deadline = binding.tvDeadline.text.toString().trimMargin(),
-                        status = false
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.cloudDone.collectLatest{
+                if(it){
+                    viewModel.fetchTaskFromCloud(
+                        taskId,
+                        Task(
+                            id = taskId,
+                            title = binding.tvTaskTitle.text.toString().trimMargin(),
+                            description = binding.tvTaskDescription.text.toString().trimMargin(),
+                            image = imageuri,
+                            startTime = binding.tvStartTime.text.toString().trimMargin(),
+                            deadline = binding.tvDeadline.text.toString().trimMargin(),
+                            status = false
+                        )
                     )
-                )
+                }
             }
         }
-        viewModel.allDone.observe(viewLifecycleOwner) {
-            if (it == true) {
-                goBack()
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.allDone.collectLatest {
+                if (it) {
+                    goBack()
+                }
             }
         }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.loader.collectLatest{
+                if(it){
+                    showLoader()
+                }else{
+                    hideLoader()
+                }
+            }
+        }
+    }
 
-        viewModel.loader.observe(viewLifecycleOwner){
-            if(it ==true){
-                binding.progressBar.visibility = View.VISIBLE
-                binding.mainView.visibility = View.GONE
-            }else{
-                binding.progressBar.visibility = View.GONE
-                binding.mainView.visibility = View.VISIBLE
-            }
-        }
+    private fun hideLoader() {
+        binding.progressBar.visibility = View.GONE
+        binding.mainView.visibility = View.VISIBLE
+    }
+
+    private fun showLoader() {
+        binding.progressBar.visibility = View.VISIBLE
+        binding.mainView.visibility = View.GONE
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -220,21 +239,8 @@ class AddTaskFragment : Fragment(R.layout.fragment_add_task){
             val selectedHour = timePicker.hour
             val selectedMinute = timePicker.minute
 
-            val selectedDateTime = Calendar.getInstance().apply {
-                timeInMillis = selectedDate
-                set(Calendar.HOUR_OF_DAY, selectedHour)
-                set(Calendar.MINUTE, selectedMinute)
-                set(Calendar.SECOND, 0)
-                set(Calendar.MILLISECOND, 0)
-            }
-
-            val now = Calendar.getInstance().apply {
-                timeInMillis = MaterialDatePicker.todayInUtcMilliseconds()
-                set(Calendar.HOUR_OF_DAY, calendar.get(Calendar.HOUR_OF_DAY))
-                set(Calendar.MINUTE, calendar.get(Calendar.MINUTE))
-                set(Calendar.SECOND, calendar.get(Calendar.SECOND))
-                set(Calendar.MILLISECOND, calendar.get(Calendar.MILLISECOND))
-            }
+            val selectedDateTime = getSelectedTime(selectedDate, selectedHour, selectedMinute)
+            val now = getCurrentTime(calendar)
 
             if (selectedDateTime.before(now)) {
                 Toast.makeText(requireContext(), "Cannot select past time", Toast.LENGTH_SHORT).show()
@@ -250,6 +256,22 @@ class AddTaskFragment : Fragment(R.layout.fragment_add_task){
             }
         }
         timePicker.show(requireActivity().supportFragmentManager, "TimePicker")
+    }
+
+    private fun getSelectedTime(selectedDate: Long, selectedHour: Int, selectedMinute: Int) = Calendar.getInstance().apply {
+        timeInMillis = selectedDate
+        set(Calendar.HOUR_OF_DAY, selectedHour)
+        set(Calendar.MINUTE, selectedMinute)
+        set(Calendar.SECOND, 0)
+        set(Calendar.MILLISECOND, 0)
+    }
+
+    private fun getCurrentTime(calendar: Calendar) = Calendar.getInstance().apply {
+        timeInMillis = MaterialDatePicker.todayInUtcMilliseconds()
+        set(Calendar.HOUR_OF_DAY, calendar.get(Calendar.HOUR_OF_DAY))
+        set(Calendar.MINUTE, calendar.get(Calendar.MINUTE))
+        set(Calendar.SECOND, calendar.get(Calendar.SECOND))
+        set(Calendar.MILLISECOND, calendar.get(Calendar.MILLISECOND))
     }
 
     // Navigate Back

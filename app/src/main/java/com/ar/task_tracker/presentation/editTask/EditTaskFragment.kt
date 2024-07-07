@@ -13,6 +13,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import coil.load
@@ -26,6 +27,8 @@ import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.timepicker.MaterialTimePicker
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -72,7 +75,7 @@ class EditTaskFragment : Fragment(R.layout.fragment_edit_task){
             binding.ivTaskImage.load(args.task.image){
                 placeholder(R.drawable.image_placeholder)
                 size(ViewSizeResolver(binding.ivTaskImage))
-                scale(Scale.FIT)
+                scale(Scale.FILL)
             }
         }
         binding.tvStartTime.text = args.task.startTime
@@ -231,37 +234,46 @@ class EditTaskFragment : Fragment(R.layout.fragment_edit_task){
 
     // Observer for LiveData
     private fun initObservers() {
-        viewModel.cloudDone.observe(viewLifecycleOwner){
-            if (it == true){
-                viewModel.fetchTaskFromCloud(
-                    args.task.id,
-                    imageuri,
-                    args.task.copy(
-                        title = binding.tvTaskTitle.text.toString().trimMargin(),
-                        description = binding.tvTaskDescription.text.toString().trimMargin(),
-                        deadline = binding.tvDeadline.text.toString().trimMargin(),
-                        status = status
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.cloudDone.collectLatest{
+                if (it){
+                    viewModel.fetchTaskFromCloud(
+                        args.task.id,
+                        imageuri,
+                        args.task.copy(
+                            title = binding.tvTaskTitle.text.toString().trimMargin(),
+                            description = binding.tvTaskDescription.text.toString().trimMargin(),
+                            deadline = binding.tvDeadline.text.toString().trimMargin(),
+                            status = status
+                        )
                     )
-                )
+                }
             }
         }
-        viewModel.currentImage.observe(viewLifecycleOwner){
-            if(it != null){
-                imageURL = it
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.currentImage.collectLatest{
+                if(it != null){
+                    imageURL = it
+                }
             }
         }
-        viewModel.allDone.observe(viewLifecycleOwner){
-            if(it==true){
-                goBack()
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.allDone.collectLatest{
+                if(it){
+                    goBack()
+                }
             }
         }
-        viewModel.loader.observe(viewLifecycleOwner){
-            if (it ==true){
-                showLoader()
-            }else{
-                hideLoader()
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.loader.collectLatest{
+                if (it){
+                    showLoader()
+                }else{
+                    hideLoader()
+                }
             }
         }
+
     }
 
     // for show and hide loader
