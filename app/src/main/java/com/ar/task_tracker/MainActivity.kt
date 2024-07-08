@@ -1,8 +1,12 @@
 package com.ar.task_tracker
 
 import android.Manifest.permission.CAMERA
+import android.Manifest.permission.POST_NOTIFICATIONS
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.READ_MEDIA_IMAGES
+import android.Manifest.permission.SCHEDULE_EXACT_ALARM
+import android.Manifest.permission.USE_EXACT_ALARM
+import android.Manifest.permission.WAKE_LOCK
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.content.pm.PackageManager
 import android.os.Build
@@ -19,6 +23,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
+import com.ar.task_tracker.presentation.addTask.notification.createNotificationChannel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -47,6 +52,7 @@ class MainActivity : AppCompatActivity() {
         if(!allPermissionsGranted()){
             requestPermissions()
         }
+        createNotificationChannel(this)
     }
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
         ContextCompat.checkSelfPermission(baseContext, it) == PackageManager.PERMISSION_GRANTED
@@ -71,13 +77,15 @@ class MainActivity : AppCompatActivity() {
         private val REQUIRED_PERMISSIONS = if (SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             mutableListOf(
                 CAMERA,
-                READ_MEDIA_IMAGES
+                READ_MEDIA_IMAGES,
+                POST_NOTIFICATIONS
             ).toTypedArray()
         } else {
             mutableListOf(
                 CAMERA,
                 WRITE_EXTERNAL_STORAGE,
-                READ_EXTERNAL_STORAGE
+                READ_EXTERNAL_STORAGE,
+                SCHEDULE_EXACT_ALARM,
             ).toTypedArray()
         }
     }

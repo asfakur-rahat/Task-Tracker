@@ -200,8 +200,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintVertical_bias="0"
         android:indeterminate="true"
-        android:paddingHorizontal="64dp"
         app:indicatorColor="@color/md_theme_primaryContainer"
         android:visibility="gone"/>
 
