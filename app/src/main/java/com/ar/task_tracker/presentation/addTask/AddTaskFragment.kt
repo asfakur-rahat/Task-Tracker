@@ -45,6 +45,7 @@ import java.util.Locale
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import androidx.camera.lifecycle.ProcessCameraProvider
+import com.ar.task_tracker.presentation.addTask.notification.scheduleTaskReminder
 
 
 @AndroidEntryPoint
@@ -56,6 +57,7 @@ class AddTaskFragment : Fragment(R.layout.fragment_add_task), SheetListener{
     private var imageuri: String? = null
     private var taskId: Int = 0
 
+    private var deadline: Long = Calendar.getInstance().timeInMillis
 
 
     private var imageCapture: ImageCapture? = null
@@ -89,8 +91,6 @@ class AddTaskFragment : Fragment(R.layout.fragment_add_task), SheetListener{
         Log.d("URI is after getting image", uri.toString())
         binding.ivTaskImage.setImageURI(uri)
     }
-
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding = FragmentAddTaskBinding.bind(view)
@@ -172,6 +172,7 @@ class AddTaskFragment : Fragment(R.layout.fragment_add_task), SheetListener{
 
     // Save Menu clicker handler where data validation happen
     private fun saveTaskClicked() {
+        setNotification()
         val title = binding.tvTaskTitle.text.toString().trimMargin()
         val description = binding.tvTaskDescription.text.toString().trimMargin()
         val deadLine = binding.tvDeadline.text.toString().trimMargin()
@@ -298,7 +299,9 @@ class AddTaskFragment : Fragment(R.layout.fragment_add_task), SheetListener{
 
             val selectedDateTime = getSelectedTime(selectedDate, selectedHour, selectedMinute)
             val now = getCurrentTime(calendar)
-
+            if(tag =="due"){
+                deadline = getSelectedTime(selectedDate,selectedHour,selectedMinute).timeInMillis
+            }
             if (selectedDateTime.before(now)) {
                 Toast.makeText(requireContext(), "Cannot select past time", Toast.LENGTH_SHORT).show()
                 showTimePicker(selectedDate)
@@ -313,6 +316,10 @@ class AddTaskFragment : Fragment(R.layout.fragment_add_task), SheetListener{
             }
         }
         timePicker.show(requireActivity().supportFragmentManager, "TimePicker")
+    }
+
+    private fun setNotification(){
+        scheduleTaskReminder(requireContext(),taskId, binding.tvTaskTitle.text.toString(), deadline)
     }
 
     private fun getSelectedTime(selectedDate: Long, selectedHour: Int, selectedMinute: Int) = Calendar.getInstance().apply {
